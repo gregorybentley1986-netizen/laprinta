@@ -190,6 +190,12 @@
       width: 100%;
       height: auto;
       overflow: visible;
+      /* Extruded bevel: TL highlight + BR depth shadow (does not alter locked gradient) */
+      filter:
+        drop-shadow(-3px -3px 0.6px rgba(234, 255, 255, 0.55))
+        drop-shadow(-1.5px -1.5px 0 rgba(180, 250, 255, 0.35))
+        drop-shadow(2.5px 3.5px 0.8px rgba(0, 6, 8, 0.78))
+        drop-shadow(5px 8px 12px rgba(0, 0, 0, 0.42));
     }
     .brand-mark .mark-sheen {
       opacity: 0.5;
@@ -359,20 +365,25 @@
                 </g>
               </g>
             </mask>
+            <!-- Edge bevel: inner highlight + inner shade (extruded rim; locked fills unchanged) -->
+            <filter id="markBevel" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="0.35" result="blur" />
+              <feOffset in="blur" dx="-0.55" dy="-0.55" result="hiOff" />
+              <feComposite in="hiOff" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="hiEdge" />
+              <feFlood flood-color="#f5ffff" flood-opacity="0.65" result="hiFlood" />
+              <feComposite in="hiFlood" in2="hiEdge" operator="in" result="highlight" />
+              <feOffset in="blur" dx="0.65" dy="0.75" result="shOff" />
+              <feComposite in="shOff" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shEdge" />
+              <feFlood flood-color="#021014" flood-opacity="0.7" result="shFlood" />
+              <feComposite in="shFlood" in2="shEdge" operator="in" result="shade" />
+              <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="shade" />
+                <feMergeNode in="highlight" />
+              </feMerge>
+            </filter>
           </defs>
-          <!-- Extruded body: BR shadow slab (behind) -->
-          <g mask="url(#markSilhouette)" transform="translate(1.35 1.7)" opacity="0.72" aria-hidden="true">
-            <rect x="10" y="-8" width="40" height="40" fill="#010508" />
-          </g>
-          <g mask="url(#markSilhouette)" transform="translate(0.7 0.9)" opacity="0.35" aria-hidden="true">
-            <rect x="10" y="-8" width="40" height="40" fill="#021018" />
-          </g>
-          <!-- TL bevel highlight slab -->
-          <g mask="url(#markSilhouette)" transform="translate(-0.85 -0.9)" opacity="0.5" aria-hidden="true">
-            <rect x="10" y="-8" width="40" height="40" fill="#f5ffff" />
-          </g>
-          <!-- Locked gradient face + sheen (unchanged stops) -->
-          <g mask="url(#markSilhouette)">
+          <g mask="url(#markSilhouette)" filter="url(#markBevel)">
             <rect x="10" y="-8" width="40" height="40" fill="url(#metalLevel)" />
             <rect x="10" y="-8" width="40" height="40" fill="url(#metalRadial)" />
             <rect class="sheen-anim mark-sheen" x="10" y="-8" width="40" height="40" fill="url(#metalSheen)" />
