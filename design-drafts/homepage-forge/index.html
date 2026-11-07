@@ -162,25 +162,26 @@
       user-select: none;
       overflow: visible;
     }
-    /* Soft far glow — no hard circle (blur + long falloff) */
+    /* Soft far glow — no hard circle (wide ellipse + heavy blur + long falloff) */
     .brand-mark-glow {
       position: absolute;
       left: 50%;
-      top: 46%;
-      width: 175%;
-      height: 175%;
+      top: 48%;
+      width: 220%;
+      height: 210%;
       transform: translate(-50%, -50%);
       pointer-events: none;
       z-index: 0;
       background: radial-gradient(
-        ellipse 58% 52% at 50% 42%,
-        rgba(0, 232, 239, 0.2) 0%,
-        rgba(0, 232, 239, 0.1) 26%,
-        rgba(0, 232, 239, 0.045) 48%,
-        rgba(0, 232, 239, 0.015) 68%,
-        transparent 82%
+        ellipse 70% 62% at 50% 44%,
+        rgba(0, 232, 239, 0.14) 0%,
+        rgba(0, 232, 239, 0.09) 22%,
+        rgba(0, 232, 239, 0.045) 42%,
+        rgba(0, 232, 239, 0.02) 62%,
+        rgba(0, 232, 239, 0.006) 78%,
+        transparent 92%
       );
-      filter: blur(40px);
+      filter: blur(56px);
     }
     .brand-mark svg {
       position: relative;
