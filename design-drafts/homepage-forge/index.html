@@ -67,7 +67,7 @@
       display: grid;
       align-content: center;
       padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
-      overflow: hidden;
+      overflow: visible;
       background-color: var(--shell);
       background-image: url("../assets/farm-aisle-neon-sketch.png");
       background-size: cover;
@@ -110,20 +110,28 @@
       position: relative;
       display: inline-block;
       margin: 0 0 1.25rem;
-      isolation: isolate;
+      overflow: visible;
+      /* Extra room so large mark is not clipped by the text box */
+      padding: 5rem 6rem;
+      margin-left: -6rem;
+      margin-right: -6rem;
+      margin-top: -3.5rem;
+      margin-bottom: -2.5rem;
     }
     .brand-mark {
       position: absolute;
       left: 50%;
-      top: 48%;
+      top: 46%;
       width: clamp(16rem, 48vw, 38rem);
+      max-width: none;
       height: auto;
-      transform: translate(-50%, -56%);
-      opacity: 0.11;
+      transform: translate(-50%, -54%);
+      opacity: 0.12;
       pointer-events: none;
       z-index: 0;
       user-select: none;
-      filter: blur(0.4px);
+      overflow: visible;
+      filter: blur(0.3px);
     }
     .brand {
       position: relative;
@@ -164,8 +172,14 @@
     .line-tag {
       display: inline-block;
       font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--accent); border: 1px solid rgba(0,232,239,0.35);
-      padding: 0.35rem 0.65rem; margin-bottom: 1.25rem;
+      color: var(--accent);
+      border: 1px solid rgba(0, 232, 239, 0.35);
+      padding: 0.4rem 0.75rem;
+      margin-bottom: 1.25rem;
+      background: rgba(7, 9, 12, 0.42);
+      backdrop-filter: blur(12px) saturate(1.15);
+      -webkit-backdrop-filter: blur(12px) saturate(1.15);
+      box-shadow: 0 1px 0 rgba(232, 238, 242, 0.04) inset;
     }
 
     .content-band {
@@ -207,6 +221,7 @@
       .nav { display: none; }
       .cols { grid-template-columns: 1fr; }
       .hero { min-height: auto; padding-bottom: 8rem; background-position: center 40%; }
+      .brand-wrap { padding: 3rem 2.5rem; margin-left: -2.5rem; margin-right: -2.5rem; margin-top: -2rem; margin-bottom: -1.5rem; }
       .brand-mark { width: min(86vw, 26rem); opacity: 0.09; }
     }
   </style>
