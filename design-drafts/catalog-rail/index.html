@@ -6,7 +6,7 @@
   <title>Каталог поплавков — Rail · laprinta</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --shell: #07090c;
@@ -19,7 +19,7 @@
       --line-dark: rgba(232,238,242,0.1);
       --line: #d5dbe3;
       --accent: #00e8ef;
-      --display: "Syne", sans-serif;
+      --heading: "Space Grotesk", sans-serif;
       --body: "IBM Plex Sans", sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -102,6 +102,8 @@
       color: var(--ink-soft);
     }
     aside h2 {
+      font-family: var(--heading);
+      font-weight: 600;
       font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 0.85rem;
     }
@@ -125,7 +127,8 @@
       margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap;
     }
     .toolbar h1 {
-      font-family: var(--display);
+      font-family: var(--heading);
+      font-weight: 600;
       font-size: clamp(1.55rem, 3vw, 2.1rem);
       letter-spacing: -0.03em;
       color: var(--accent);

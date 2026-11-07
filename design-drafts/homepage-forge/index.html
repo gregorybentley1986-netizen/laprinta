@@ -6,7 +6,7 @@
   <title>laprinta — главная · Forge</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     @font-face {
       font-family: "Arista Pro SemiBold";
@@ -29,6 +29,7 @@
       --accent: #00e8ef;
       --accent-dim: rgba(0, 232, 239, 0.14);
       --ui: "IBM Plex Sans", sans-serif;
+      --heading: "Space Grotesk", sans-serif;
       --brand: "Arista Pro SemiBold", sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -257,10 +258,10 @@
       padding: 4.5rem clamp(1.25rem, 4vw, 2.5rem);
     }
     .content-band h2 {
-      font-family: var(--ui);
+      font-family: var(--heading);
       font-weight: 600;
       font-size: clamp(1.7rem, 3.5vw, 2.5rem);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       margin-bottom: 0.65rem;
     }
     .content-band .lead { color: var(--muted-on-light); max-width: 36rem; margin-bottom: 2.25rem; }
@@ -269,7 +270,13 @@
       padding-top: 1rem;
       border-top: 2px solid var(--accent);
     }
-    .cols h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .cols h3 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
     .cols p { color: var(--muted-on-light); font-size: 0.95rem; margin-bottom: 0.75rem; }
     .cols .more {
       font-size: 0.88rem; font-weight: 500; color: #0a8f96;
