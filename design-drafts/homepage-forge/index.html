@@ -110,12 +110,12 @@
       transition: background 40ms linear;
     }
 
-    /* Left + bottom vignettes for copy readability */
+    /* Left + bottom vignettes for copy — below the mark so they never cover it */
     .hero::before {
       content: "";
       position: absolute; inset: 0;
       pointer-events: none;
-      z-index: 3;
+      z-index: 1;
       background:
         linear-gradient(
           to right,
@@ -149,7 +149,7 @@
       z-index: 4;
     }
 
-    /* Independently lit — above .hero-bg so spotlight never dims/tints the mark */
+    /* Above farm + spotlight + vignette — bg darkening never covers the mark */
     .brand-mark {
       position: absolute;
       left: 50%;
@@ -158,7 +158,7 @@
       height: auto;
       transform: translate(-50%, -50%);
       pointer-events: none;
-      z-index: 2;
+      z-index: 3;
       user-select: none;
       overflow: visible;
     }
@@ -169,7 +169,7 @@
       overflow: visible;
     }
     .brand-mark .mark-sheen {
-      opacity: 0.5;
+      opacity: 0.9;
       pointer-events: none;
     }
 
@@ -299,30 +299,32 @@
       <div class="brand-mark" aria-hidden="true">
         <svg viewBox="10 -8 40 40" fill="none" overflow="visible" aria-hidden="true">
           <defs>
-            <!-- Bright overall (body stays lit); level field in viewBox space -->
+            <!-- Level-uniform metal (viewBox Y) — lit body with clear tonal steps -->
             <linearGradient id="metalLevel" gradientUnits="userSpaceOnUse" x1="30" y1="-4" x2="30" y2="27">
-              <stop offset="0%" stop-color="#9af8fc" stop-opacity="0.92" />
-              <stop offset="22%" stop-color="#d7fdff" stop-opacity="1" />
-              <stop offset="55%" stop-color="#b3fafd" stop-opacity="0.98" />
-              <stop offset="100%" stop-color="#8af6fb" stop-opacity="0.95" />
+              <stop offset="0%" stop-color="#c9fcff" stop-opacity="0.95" />
+              <stop offset="22%" stop-color="#eaffff" stop-opacity="1" />
+              <stop offset="48%" stop-color="#5eeef4" stop-opacity="0.95" />
+              <stop offset="72%" stop-color="#2ad0d8" stop-opacity="0.88" />
+              <stop offset="100%" stop-color="#14949c" stop-opacity="0.8" />
             </linearGradient>
-            <!-- Only the apex (top vertex) slightly darker -->
-            <radialGradient id="apexShade" gradientUnits="userSpaceOnUse" cx="30" cy="-1.5" r="8.5">
-              <stop offset="0%" stop-color="#031012" stop-opacity="0.5" />
-              <stop offset="45%" stop-color="#031012" stop-opacity="0.22" />
+            <!-- Apex (top vertex) slightly darker -->
+            <radialGradient id="apexShade" gradientUnits="userSpaceOnUse" cx="30" cy="-1" r="9">
+              <stop offset="0%" stop-color="#031012" stop-opacity="0.55" />
+              <stop offset="50%" stop-color="#031012" stop-opacity="0.22" />
               <stop offset="100%" stop-color="#031012" stop-opacity="0" />
             </radialGradient>
-            <!-- Diagonal TL→BR sheen only; stretched soft band; one-way (no reverse) -->
-            <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="6" y1="-10" x2="54" y2="34">
+            <!-- Diagonal TL→BR stretched sheen; one-way; always crosses mark mid-pass -->
+            <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="4" y1="-12" x2="56" y2="36"
+              gradientTransform="translate(-12 -12)">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-              <stop offset="28%" stop-color="#ffffff" stop-opacity="0" />
-              <stop offset="42%" stop-color="#eaffff" stop-opacity="0.12" />
-              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.7" />
-              <stop offset="58%" stop-color="#c5fcff" stop-opacity="0.12" />
-              <stop offset="72%" stop-color="#00e8ef" stop-opacity="0" />
+              <stop offset="22%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="38%" stop-color="#eaffff" stop-opacity="0.2" />
+              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.95" />
+              <stop offset="62%" stop-color="#9ff9fd" stop-opacity="0.22" />
+              <stop offset="78%" stop-color="#00e8ef" stop-opacity="0" />
               <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
               <animateTransform attributeName="gradientTransform" type="translate"
-                from="-56 -56" to="56 56" dur="5.6s" repeatCount="indefinite" />
+                from="-48 -48" to="48 48" dur="5.6s" repeatCount="indefinite" />
             </linearGradient>
             <!-- White silhouette; gradient rects are masked → uniform levels, never stroke-mapped -->
             <mask id="markSilhouette" maskUnits="userSpaceOnUse" x="8" y="-10" width="44" height="44" maskContentUnits="userSpaceOnUse">
