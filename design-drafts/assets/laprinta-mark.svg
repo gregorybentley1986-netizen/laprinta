@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  viewBox="22 -2 44 40"
+  viewBox="10 -8 40 40"
+  width="100%"
+  height="100%"
   fill="none"
   overflow="visible"
   style="overflow: visible"
-  aria-hidden="true">
-  <!-- Triangle mark only (from Greg logo SVG), padded viewBox so strokes aren't clipped -->
-  <g transform="translate(-23.47549,-8.6930421)" overflow="visible">
-    <g transform="translate(12.93681,4.1907975)" overflow="visible">
+  aria-hidden="true"
+  preserveAspectRatio="xMidYMid meet">
+  <!-- Mark-only paths; viewBox padded to full stroke bounds (img clips to viewBox) -->
+  <g transform="translate(-23.47549,-8.6930421)">
+    <g transform="translate(12.93681,4.1907975)">
       <path
         transform="matrix(0.71878205,0,0,0.71878205,6.6901649,12.085315)"
         stroke="#00e8ef"
