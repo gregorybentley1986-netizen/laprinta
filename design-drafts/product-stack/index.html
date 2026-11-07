@@ -34,7 +34,12 @@
       color: var(--ink-soft);
       position: sticky; top: 0; z-index: 5;
     }
-    .logo img { height: 96px; width: auto; display: block; }
+    .logo img {
+      height: 96px; width: auto; display: block;
+      filter:
+        drop-shadow(0 0 4px rgba(0, 232, 239, 0.55))
+        drop-shadow(0 0 10px rgba(0, 232, 239, 0.28));
+    }
     .hdr-meta { color: var(--muted); font-size: 0.9rem; }
     .fav {
       color: var(--muted); font-size: 0.85rem;

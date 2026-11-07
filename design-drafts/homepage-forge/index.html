@@ -85,14 +85,35 @@
     }
     .hero > * { position: relative; z-index: 1; }
 
+    .brand-wrap {
+      position: relative;
+      display: inline-block;
+      margin: 0 0 1.25rem;
+      isolation: isolate;
+    }
+    .brand-mark {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: clamp(16rem, 48vw, 38rem);
+      height: auto;
+      transform: translate(-50%, -56%);
+      opacity: 0.11;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      filter: blur(0.4px);
+    }
     .brand {
+      position: relative;
+      z-index: 1;
       font-family: var(--brand);
       font-weight: 600;
       font-size: clamp(4.2rem, 13vw, 9.5rem);
       line-height: 0.88;
       letter-spacing: -0.02em;
       text-transform: none;
-      margin: 0 0 1.25rem;
+      margin: 0;
     }
     .brand span { color: var(--accent); }
     .hero-line {
@@ -163,6 +184,7 @@
       .nav { display: none; }
       .cols { grid-template-columns: 1fr; }
       .hero { min-height: auto; padding-bottom: 8rem; }
+      .brand-mark { width: min(86vw, 26rem); opacity: 0.09; }
     }
   </style>
 </head>
@@ -182,7 +204,17 @@
   <main>
     <section class="hero">
       <div class="line-tag">аддитивные технологии</div>
-      <h1 class="brand">la<span>printa</span></h1>
+      <div class="brand-wrap">
+        <img
+          class="brand-mark"
+          src="../assets/laprinta-mark.svg"
+          alt=""
+          aria-hidden="true"
+          width="320"
+          height="280"
+        />
+        <h1 class="brand">la<span>printa</span></h1>
+      </div>
       <p class="hero-line">Изделия из пластика и термополиуретана изготовленные методом аддитивных технологий.</p>
       <div class="hero-meta">
         <a class="cta" href="../catalog-rail/index.html">Открыть каталог <span aria-hidden="true">→</span></a>
