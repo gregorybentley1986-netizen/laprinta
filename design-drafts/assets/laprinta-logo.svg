@@ -4,8 +4,8 @@
 <svg
    width="59.608795mm"
    height="42.623344mm"
-   viewBox="0 0 59.608795 42.623344"
-   version="1.1"
+   viewBox="-3 -3 65.608795 48.623344"
+   version="1.1" overflow="visible" style="overflow:visible"
    id="svg1"
    xml:space="preserve"
    inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
@@ -268,10 +268,34 @@
        apply_no_radius="true"
        apply_with_radius="true"
        only_selected="false"
-       hide_knots="false" /></defs><g
+       hide_knots="false" /><filter
+       id="neonGlow"
+       x="-35%"
+       y="-35%"
+       width="170%"
+       height="170%"
+       color-interpolation-filters="sRGB"
+       filterUnits="objectBoundingBox"><feGaussianBlur
+         in="SourceGraphic"
+         stdDeviation="0.85"
+         result="softBlur" /><feFlood
+         flood-color="#00e8ef"
+         flood-opacity="0.45"
+         result="glowColor" /><feComposite
+         in="glowColor"
+         in2="softBlur"
+         operator="in"
+         result="coloredGlow" /><feGaussianBlur
+         in="SourceGraphic"
+         stdDeviation="0.35"
+         result="tightBlur" /><feMerge
+         id="neonMerge"><feMergeNode
+           in="coloredGlow" /><feMergeNode
+           in="tightBlur" /><feMergeNode
+           in="SourceGraphic" /></feMerge></filter></defs><g
      inkscape:label="Слой 1"
      inkscape:groupmode="layer"
-     id="layer1"
+     id="layer1" filter="url(#neonGlow)"
      transform="translate(-23.47549,-8.6930421)"><text
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,1.2368818,-26.500431)"
