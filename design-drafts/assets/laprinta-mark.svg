@@ -9,29 +9,19 @@
   style="overflow: visible"
   aria-hidden="true"
   preserveAspectRatio="xMidYMid meet">
+  <!-- LOCKED mark gradient — match homepage-forge-20261107-gradient-locked.png; do not edit -->
   <defs>
     <linearGradient id="markStrokeGrad" gradientUnits="userSpaceOnUse" x1="30" y1="-4" x2="30" y2="27">
-      <stop offset="0%" stop-color="#c9fcff" stop-opacity="0.95" />
-      <stop offset="22%" stop-color="#eaffff" stop-opacity="1" />
-      <stop offset="48%" stop-color="#5eeef4" stop-opacity="0.95" />
-      <stop offset="72%" stop-color="#2ad0d8" stop-opacity="0.88" />
-      <stop offset="100%" stop-color="#14949c" stop-opacity="0.8" />
+      <stop offset="0%" stop-color="#f2ffff" stop-opacity="0.98" />
+      <stop offset="28%" stop-color="#6eeff4" stop-opacity="0.88" />
+      <stop offset="62%" stop-color="#1299a1" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#041214" stop-opacity="0.18" />
     </linearGradient>
-    <radialGradient id="apexShade" gradientUnits="userSpaceOnUse" cx="30" cy="-1" r="9">
-      <stop offset="0%" stop-color="#031012" stop-opacity="0.55" />
-      <stop offset="50%" stop-color="#031012" stop-opacity="0.22" />
-      <stop offset="100%" stop-color="#031012" stop-opacity="0" />
-    </radialGradient>
-    <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="4" y1="-12" x2="56" y2="36"
-      gradientTransform="translate(-12 -12)">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="22%" stop-color="#ffffff" stop-opacity="0" />
-      <stop offset="38%" stop-color="#eaffff" stop-opacity="0.2" />
-      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.95" />
-      <stop offset="62%" stop-color="#9ff9fd" stop-opacity="0.22" />
-      <stop offset="78%" stop-color="#00e8ef" stop-opacity="0" />
+    <radialGradient id="metalRadial" gradientUnits="userSpaceOnUse" cx="30" cy="4" r="18">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="40%" stop-color="#b8fbff" stop-opacity="0.12" />
       <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
-    </linearGradient>
+    </radialGradient>
     <mask id="markSilhouette" maskUnits="userSpaceOnUse" x="8" y="-10" width="44" height="44" maskContentUnits="userSpaceOnUse">
       <rect x="8" y="-10" width="44" height="44" fill="#000" />
       <g fill="none" stroke="#fff" stroke-linejoin="round" stroke-linecap="round">
@@ -55,7 +45,6 @@
   </defs>
   <g mask="url(#markSilhouette)">
     <rect x="10" y="-8" width="40" height="40" fill="url(#markStrokeGrad)" />
-    <rect x="10" y="-8" width="40" height="40" fill="url(#apexShade)" />
-    <rect x="10" y="-8" width="40" height="40" fill="url(#metalSheen)" opacity="0.9" />
+    <rect x="10" y="-8" width="40" height="40" fill="url(#metalRadial)" />
   </g>
 </svg>
