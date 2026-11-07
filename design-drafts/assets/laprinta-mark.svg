@@ -10,12 +10,18 @@
   aria-hidden="true"
   preserveAspectRatio="xMidYMid meet">
   <defs>
+    <!-- Bright overall; apex slightly darker -->
     <linearGradient id="markStrokeGrad" gradientUnits="userSpaceOnUse" x1="30" y1="-4" x2="30" y2="27">
-      <stop offset="0%" stop-color="#f2ffff" stop-opacity="0.95" />
-      <stop offset="28%" stop-color="#6eeff4" stop-opacity="0.85" />
-      <stop offset="62%" stop-color="#00e8ef" stop-opacity="0.4" />
-      <stop offset="100%" stop-color="#00e8ef" stop-opacity="0.08" />
+      <stop offset="0%" stop-color="#9af8fc" stop-opacity="0.92" />
+      <stop offset="22%" stop-color="#d7fdff" stop-opacity="1" />
+      <stop offset="55%" stop-color="#b3fafd" stop-opacity="0.98" />
+      <stop offset="100%" stop-color="#8af6fb" stop-opacity="0.95" />
     </linearGradient>
+    <radialGradient id="apexShade" gradientUnits="userSpaceOnUse" cx="30" cy="-1.5" r="8.5">
+      <stop offset="0%" stop-color="#031012" stop-opacity="0.5" />
+      <stop offset="45%" stop-color="#031012" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#031012" stop-opacity="0" />
+    </radialGradient>
     <mask id="markSilhouette" maskUnits="userSpaceOnUse" x="8" y="-10" width="44" height="44" maskContentUnits="userSpaceOnUse">
       <rect x="8" y="-10" width="44" height="44" fill="#000" />
       <g fill="none" stroke="#fff" stroke-linejoin="round" stroke-linecap="round">
@@ -39,5 +45,6 @@
   </defs>
   <g mask="url(#markSilhouette)">
     <rect x="10" y="-8" width="40" height="40" fill="url(#markStrokeGrad)" />
+    <rect x="10" y="-8" width="40" height="40" fill="url(#apexShade)" />
   </g>
 </svg>
