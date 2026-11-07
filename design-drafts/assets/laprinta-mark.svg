@@ -9,25 +9,39 @@
   style="overflow: visible"
   aria-hidden="true"
   preserveAspectRatio="xMidYMid meet">
-  <!-- Mark-only paths; viewBox padded to full stroke bounds (img clips to viewBox) -->
+  <defs>
+    <!-- Soft cyan → transparent (top bright → bottom fade) -->
+    <linearGradient id="markStrokeGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#00e8ef" stop-opacity="0.72" />
+      <stop offset="45%" stop-color="#00e8ef" stop-opacity="0.38" />
+      <stop offset="100%" stop-color="#00e8ef" stop-opacity="0.05" />
+    </linearGradient>
+    <radialGradient id="markHaloGrad" cx="50%" cy="38%" r="62%">
+      <stop offset="0%" stop-color="#00e8ef" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#00e8ef" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <!-- Soft fill wash behind strokes -->
+  <ellipse cx="30" cy="14" rx="14" ry="13" fill="url(#markHaloGrad)" />
   <g transform="translate(-23.47549,-8.6930421)">
     <g transform="translate(12.93681,4.1907975)">
       <path
         transform="matrix(0.71878205,0,0,0.71878205,6.6901649,12.085315)"
-        stroke="#00e8ef"
+        stroke="url(#markStrokeGrad)"
         stroke-width="2.78248"
         stroke-linejoin="round"
         stroke-linecap="round"
         d="M 61.359483,25.481389 H 55.887031 32.952078 a 5.0409894,5.0409894 60 0 1 -4.365625,-7.561484 l 2.736226,-4.739283 11.467477,-19.8622519 a 5.0409895,5.0409895 7.0701838e-7 0 1 8.73125,1e-7 l 2.736226,4.7392831 11.467476,19.8622517 a 5.0409895,5.0409895 120 0 1 -4.365625,7.561484 z" />
       <path
         transform="matrix(0.22862813,0,0,0.22862813,29.711147,18.10475)"
-        stroke="#00e8ef"
+        stroke="url(#markStrokeGrad)"
         stroke-width="8.74783"
         stroke-linejoin="round"
         stroke-linecap="round"
         d="M 67.641167,25.481389 H 49.605347 26.670394 A 1.4142577,1.4142577 60 0 1 25.445611,23.360002 L 34.463521,7.7405247 45.930998,-12.121727 a 1.4142577,1.4142577 7.0701843e-7 0 1 2.449566,0 L 57.398474,3.4977509 68.86595,23.360002 a 1.4142577,1.4142577 120 0 1 -1.224783,2.121387 z" />
       <path
-        stroke="#00e8ef"
+        stroke="url(#markStrokeGrad)"
         stroke-width="2"
         stroke-linecap="round"
         d="M 40.219594,15.310243 C 44.29437,8.4572109 44.29437,8.4572109 44.29437,8.4572109" />
