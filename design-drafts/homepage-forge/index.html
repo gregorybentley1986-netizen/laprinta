@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>laprinta — главная · Forge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --shell: #07090c;
+      --content: #f3f5f7;
+      --ink: #10151b;
+      --ink-soft: #e8eef2;
+      --muted: #8b959f;
+      --muted-on-light: #5c6772;
+      --line-dark: rgba(232, 238, 242, 0.1);
+      --accent: #00e8ef;
+      --accent-dim: rgba(0, 232, 239, 0.14);
+      --display: "Syne", sans-serif;
+      --body: "IBM Plex Sans", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--body);
+      background: var(--shell);
+      color: var(--ink-soft);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .shell-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.85rem clamp(1.25rem, 4vw, 2.5rem);
+      background: var(--shell);
+      border-bottom: 1px solid var(--line-dark);
+    }
+    .logo img { height: 42px; width: auto; display: block; }
+    .nav { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--muted); }
+    .nav a:hover { color: var(--ink-soft); }
+    .nav a.on { color: var(--accent); }
+    .fav {
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 0.2rem;
+    }
+    .fav:hover { color: var(--accent); }
+    .fav svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+
+    .hero {
+      position: relative;
+      min-height: calc(100svh - 74px);
+      display: grid;
+      align-content: center;
+      padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 55% at 75% 30%, rgba(0,232,239,0.1), transparent 55%),
+        linear-gradient(160deg, #07090c, #0e1318 55%, #07090c);
+    }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(232,238,242,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,238,242,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 65% 55% at 70% 40%, black, transparent);
+      pointer-events: none;
+    }
+    .brand {
+      position: relative;
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: clamp(4.2rem, 13vw, 9.5rem);
+      line-height: 0.88;
+      letter-spacing: -0.045em;
+      text-transform: lowercase;
+      margin-bottom: 1.25rem;
+    }
+    .brand span { color: var(--accent); }
+    .hero-line {
+      position: relative;
+      max-width: 34rem;
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: var(--muted);
+      margin-bottom: 1.75rem;
+    }
+    .hero-meta {
+      position: relative;
+      display: flex; flex-wrap: wrap; gap: 0.85rem 1.25rem; align-items: center;
+    }
+    .cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: #041214;
+      font-weight: 600; font-size: 0.95rem;
+      padding: 0.9rem 1.3rem;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .cta:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .cta-ghost {
+      color: var(--muted); font-size: 0.9rem;
+      border-bottom: 1px solid var(--line-dark); padding-bottom: 0.15rem;
+    }
+    .cta-ghost:hover { color: var(--ink-soft); }
+    .line-tag {
+      position: relative;
+      display: inline-block;
+      font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); border: 1px solid rgba(0,232,239,0.35);
+      padding: 0.35rem 0.65rem; margin-bottom: 1.25rem;
+    }
+    .float-plane {
+      position: absolute; right: 6%; top: 18%; bottom: 14%;
+      width: min(42vw, 520px);
+      pointer-events: none;
+      background:
+        linear-gradient(145deg, rgba(0,232,239,0.12), transparent 60%),
+        repeating-linear-gradient(0deg, transparent 0 18px, rgba(232,238,242,0.04) 18px 19px),
+        #121820;
+      clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 86%);
+    }
+    .float-plane::before {
+      content: "";
+      position: absolute;
+      left: 42%; top: 18%;
+      width: 28px; height: 52%;
+      background: linear-gradient(180deg, var(--accent), transparent 80%);
+      border-radius: 20px 20px 4px 4px;
+      box-shadow: 0 0 24px rgba(0,232,239,0.35);
+      transform: rotate(8deg);
+    }
+    .float-plane::after {
+      content: "линейка printfarm";
+      position: absolute; left: 14%; bottom: 14%;
+      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+    }
+
+    .content-band {
+      background: var(--content);
+      color: var(--ink);
+      padding: 4.5rem clamp(1.25rem, 4vw, 2.5rem);
+    }
+    .content-band h2 {
+      font-family: var(--display);
+      font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+      letter-spacing: -0.03em;
+      margin-bottom: 0.65rem;
+    }
+    .content-band .lead { color: var(--muted-on-light); max-width: 36rem; margin-bottom: 2.25rem; }
+    .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+    .cols article {
+      padding-top: 1rem;
+      border-top: 2px solid var(--accent);
+    }
+    .cols h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .cols p { color: var(--muted-on-light); font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .cols .more {
+      font-size: 0.88rem; font-weight: 500; color: #0a8f96;
+    }
+    .cols .more:hover { color: var(--ink); }
+
+    footer {
+      background: var(--shell);
+      border-top: 1px solid var(--line-dark);
+      padding: 1.35rem clamp(1.25rem, 4vw, 2.5rem);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+      color: var(--muted); font-size: 0.85rem;
+    }
+    footer a { color: var(--muted); border-bottom: 1px solid transparent; }
+    footer a:hover { color: var(--accent); border-bottom-color: rgba(0,232,239,0.35); }
+
+    @media (max-width: 860px) {
+      .nav { display: none; }
+      .float-plane { opacity: 0.35; width: 70%; right: -10%; }
+      .cols { grid-template-columns: 1fr; }
+      .hero { min-height: auto; padding-bottom: 8rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-header">
+    <a class="logo" href="#" aria-label="laprinta">
+      <img src="../assets/laprinta-logo.png" alt="laprinta" width="120" height="42" />
+    </a>
+    <nav class="nav" aria-label="Основное">
+      <a class="on" href="../catalog-rail/index.html">Каталог</a>
+      <a href="#">Производство</a>
+      <a href="#">О компании</a>
+    </nav>
+    <a class="fav" href="#" title="Избранное" aria-label="Избранное">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      Избранное
+    </a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="float-plane" aria-hidden="true"></div>
+      <div class="line-tag">printfarm · поплавки</div>
+      <h1 class="brand">lapri<span>nta</span></h1>
+      <p class="hero-line">Готовые рыболовные поплавки с производственной фермы. Смотрите модели, сравнивайте серии — каталог в центре внимания.</p>
+      <div class="hero-meta">
+        <a class="cta" href="../catalog-rail/index.html">Открыть каталог <span aria-hidden="true">→</span></a>
+        <a class="cta-ghost" href="../catalog-rail/index.html">Смотреть серии</a>
+      </div>
+    </section>
+
+    <section class="content-band">
+      <h2>Серийные поплавки под задачу</h2>
+      <p class="lead">Скользящие, матчевые, для дальнего заброса и зимние модели — единый каталог laprinta.</p>
+      <div class="cols">
+        <article>
+          <h3>Скользящие</h3>
+          <p>Для проводки на течении и стоячей воде. Серии «Лагуна» и «Нева».</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+        <article>
+          <h3>Матчевые</h3>
+          <p>Дальний заброс, стабильная посадка. Серия «Орион».</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+        <article>
+          <h3>Зимние</h3>
+          <p>Компактные модели для лунки. Серия «Полюс».</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 laprinta · laprinta.ru</span>
+    <a href="#">Связаться</a>
+  </footer>
+</body>
+</html>
