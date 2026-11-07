@@ -68,20 +68,45 @@
       align-content: center;
       padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse 70% 55% at 75% 30%, rgba(0,232,239,0.1), transparent 55%),
-        linear-gradient(160deg, #07090c, #0e1318 55%, #07090c);
+      background-color: var(--shell);
+      background-image: url("../assets/farm-aisle-hero.jpg");
+      background-size: cover;
+      background-position: center 42%;
+      background-repeat: no-repeat;
     }
     .hero::before {
       content: "";
       position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(232,238,242,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(232,238,242,0.03) 1px, transparent 1px);
-      background-size: 64px 64px;
-      mask-image: radial-gradient(ellipse 65% 55% at 70% 40%, black, transparent);
       pointer-events: none;
+      z-index: 0;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(7, 9, 12, 0.72) 0%,
+          rgba(7, 9, 12, 0.55) 28%,
+          rgba(7, 9, 12, 0.62) 52%,
+          rgba(7, 9, 12, 0.88) 78%,
+          rgba(7, 9, 12, 0.96) 100%
+        ),
+        radial-gradient(
+          ellipse 70% 55% at 35% 45%,
+          rgba(7, 9, 12, 0.55),
+          transparent 70%
+        ),
+        linear-gradient(
+          90deg,
+          rgba(7, 9, 12, 0.35) 0%,
+          transparent 22%,
+          transparent 78%,
+          rgba(7, 9, 12, 0.4) 100%
+        ),
+        linear-gradient(
+          160deg,
+          rgba(0, 232, 239, 0.06),
+          transparent 45%
+        );
     }
+    .hero > * { position: relative; z-index: 1; }
 
     .brand-wrap {
       position: relative;
@@ -96,10 +121,10 @@
       width: clamp(18rem, 52vw, 42rem);
       height: auto;
       transform: translate(-52%, -54%);
-      opacity: 0.18;
+      opacity: 0.28;
       pointer-events: none;
       z-index: 0;
-      filter: drop-shadow(0 0 28px rgba(0, 232, 239, 0.25));
+      filter: drop-shadow(0 0 28px rgba(0, 232, 239, 0.35));
       user-select: none;
     }
     .brand {
@@ -112,17 +137,17 @@
       letter-spacing: -0.02em;
       text-transform: none;
       margin: 0;
+      text-shadow: 0 2px 28px rgba(7, 9, 12, 0.75);
     }
     .brand span { color: var(--accent); }
     .hero-line {
-      position: relative;
       max-width: 34rem;
       font-size: clamp(1.05rem, 2vw, 1.2rem);
-      color: var(--muted);
+      color: #c5ced6;
       margin-bottom: 1.75rem;
+      text-shadow: 0 1px 16px rgba(7, 9, 12, 0.85);
     }
     .hero-meta {
-      position: relative;
       display: flex; flex-wrap: wrap; gap: 0.85rem 1.25rem; align-items: center;
     }
     .cta {
@@ -139,36 +164,12 @@
     }
     .cta-ghost:hover { color: var(--ink-soft); }
     .line-tag {
-      position: relative;
       display: inline-block;
       font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--accent); border: 1px solid rgba(0,232,239,0.35);
+      color: var(--accent); border: 1px solid rgba(0,232,239,0.45);
+      background: rgba(7, 9, 12, 0.45);
       padding: 0.35rem 0.65rem; margin-bottom: 1.25rem;
-    }
-    .float-plane {
-      position: absolute; right: 6%; top: 18%; bottom: 14%;
-      width: min(42vw, 520px);
-      pointer-events: none;
-      background:
-        linear-gradient(145deg, rgba(0,232,239,0.12), transparent 60%),
-        repeating-linear-gradient(0deg, transparent 0 18px, rgba(232,238,242,0.04) 18px 19px),
-        #121820;
-      clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 86%);
-    }
-    .float-plane::before {
-      content: "";
-      position: absolute;
-      left: 42%; top: 18%;
-      width: 28px; height: 52%;
-      background: linear-gradient(180deg, var(--accent), transparent 80%);
-      border-radius: 20px 20px 4px 4px;
-      box-shadow: 0 0 24px rgba(0,232,239,0.35);
-      transform: rotate(8deg);
-    }
-    .float-plane::after {
-      content: "каталог изделий";
-      position: absolute; left: 14%; bottom: 14%;
-      font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);
+      backdrop-filter: blur(4px);
     }
 
     .content-band {
@@ -208,10 +209,9 @@
 
     @media (max-width: 860px) {
       .nav { display: none; }
-      .float-plane { opacity: 0.35; width: 70%; right: -10%; }
       .cols { grid-template-columns: 1fr; }
-      .hero { min-height: auto; padding-bottom: 8rem; }
-      .brand-mark { width: min(88vw, 28rem); opacity: 0.14; }
+      .hero { min-height: auto; padding-bottom: 8rem; background-position: center 35%; }
+      .brand-mark { width: min(88vw, 28rem); opacity: 0.22; }
     }
   </style>
 </head>
@@ -230,7 +230,6 @@
 
   <main>
     <section class="hero">
-      <div class="float-plane" aria-hidden="true"></div>
       <div class="line-tag">аддитивные технологии</div>
       <div class="brand-wrap">
         <img
