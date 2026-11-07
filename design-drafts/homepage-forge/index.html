@@ -163,12 +163,9 @@
       width: 100%;
       height: auto;
       overflow: visible;
-      filter:
-        drop-shadow(0 0 10px rgba(0, 232, 239, 0.18))
-        drop-shadow(0 0 28px rgba(0, 232, 239, 0.08));
     }
     .brand-mark .mark-sheen {
-      opacity: 0.55;
+      opacity: 0.5;
       pointer-events: none;
     }
 
@@ -302,27 +299,24 @@
               <stop offset="62%" stop-color="#1299a1" stop-opacity="0.55" />
               <stop offset="100%" stop-color="#041214" stop-opacity="0.18" />
             </linearGradient>
-            <!-- Soft radial metallic highlight (also viewBox-locked) -->
+            <!-- Soft tip highlight (viewBox-locked, no circular halo) -->
             <radialGradient id="metalRadial" gradientUnits="userSpaceOnUse" cx="30" cy="4" r="18">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45" />
-              <stop offset="40%" stop-color="#b8fbff" stop-opacity="0.18" />
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+              <stop offset="40%" stop-color="#b8fbff" stop-opacity="0.12" />
               <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
             </radialGradient>
-            <!-- Horizontal specular sweep in viewBox X (level band, not path-tangent) -->
-            <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="14" y1="0" x2="26" y2="0">
+            <!-- Diagonal TL→BR sheen only; stretched soft band; one-way (no reverse) -->
+            <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="6" y1="-10" x2="54" y2="34">
               <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
-              <stop offset="48%" stop-color="#ffffff" stop-opacity="0" />
-              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.75" />
-              <stop offset="52%" stop-color="#c5fcff" stop-opacity="0.25" />
+              <stop offset="28%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="42%" stop-color="#eaffff" stop-opacity="0.12" />
+              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.7" />
+              <stop offset="58%" stop-color="#c5fcff" stop-opacity="0.12" />
+              <stop offset="72%" stop-color="#00e8ef" stop-opacity="0" />
               <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
-              <animate attributeName="x1" values="-18;40;-18" dur="5.2s" repeatCount="indefinite" />
-              <animate attributeName="x2" values="-6;52;-6" dur="5.2s" repeatCount="indefinite" />
+              <animateTransform attributeName="gradientTransform" type="translate"
+                from="-56 -56" to="56 56" dur="5.6s" repeatCount="indefinite" />
             </linearGradient>
-            <radialGradient id="markHaloGrad" gradientUnits="userSpaceOnUse" cx="30" cy="10" r="18">
-              <stop offset="0%" stop-color="#00e8ef" stop-opacity="0.2" />
-              <stop offset="55%" stop-color="#00e8ef" stop-opacity="0.06" />
-              <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
-            </radialGradient>
             <!-- White silhouette; gradient rects are masked → uniform levels, never stroke-mapped -->
             <mask id="markSilhouette" maskUnits="userSpaceOnUse" x="8" y="-10" width="44" height="44" maskContentUnits="userSpaceOnUse">
               <rect x="8" y="-10" width="44" height="44" fill="#000" />
@@ -337,7 +331,6 @@
               </g>
             </mask>
           </defs>
-          <ellipse cx="30" cy="14" rx="14" ry="13" fill="url(#markHaloGrad)" />
           <g mask="url(#markSilhouette)">
             <rect x="10" y="-8" width="40" height="40" fill="url(#metalLevel)" />
             <rect x="10" y="-8" width="40" height="40" fill="url(#metalRadial)" />
