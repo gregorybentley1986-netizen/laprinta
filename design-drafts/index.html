@@ -33,20 +33,51 @@
       padding-bottom: 1.25rem;
       border-bottom: 1px solid var(--line);
     }
-    header a.logo { display: inline-flex; }
+    header .logo,
+    header a.logo {
+      position: relative;
+      display: inline-flex;
+      overflow: visible;
+    }
+    header .logo::before,
+    header a.logo::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 150%; height: 150%;
+      transform: translate(-50%, -50%);
+      border-radius: 40%;
+      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.3) 0%, transparent 70%);
+      filter: blur(8px);
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+      transition: opacity 0.25s ease, filter 0.25s ease;
+    }
+    header .logo:hover::before,
+    header a.logo:hover::before {
+      opacity: 1;
+      filter: blur(12px);
+      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.48) 0%, transparent 72%);
+    }
     header img {
       height: 48px; width: auto;
+      position: relative;
+      z-index: 1;
       transition: filter 0.25s ease;
       filter:
-        drop-shadow(0 0 8px rgba(0, 232, 239, 0.1))
-        drop-shadow(0 0 18px rgba(0, 232, 239, 0.05));
+        drop-shadow(0 0 3px rgba(0, 232, 239, 0.7))
+        drop-shadow(0 0 10px rgba(0, 232, 239, 0.35))
+        drop-shadow(0 0 20px rgba(0, 232, 239, 0.18));
     }
+    header .logo:hover img,
     header a.logo:hover img,
     header a.logo:focus-visible img,
     header img:hover {
       filter:
-        drop-shadow(0 0 10px rgba(0, 232, 239, 0.22))
-        drop-shadow(0 0 22px rgba(0, 232, 239, 0.12));
+        drop-shadow(0 0 4px rgba(0, 232, 239, 0.95))
+        drop-shadow(0 0 12px rgba(0, 232, 239, 0.55))
+        drop-shadow(0 0 28px rgba(0, 232, 239, 0.3));
     }
     header p { color: var(--muted); font-size: 0.95rem; }
     h1 {
@@ -87,7 +118,7 @@
 </head>
 <body>
   <header>
-    <img src="assets/laprinta-logo.svg" alt="laprinta" height="48" />
+    <a class="logo" href="#"><img src="assets/laprinta-logo.svg" alt="laprinta" height="48" /></a>
     <p>Выбранное направление · discovery-first</p>
   </header>
 

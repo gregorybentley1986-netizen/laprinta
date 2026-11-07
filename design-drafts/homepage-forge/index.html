@@ -74,7 +74,7 @@
       background-position: center center;
       background-repeat: no-repeat;
     }
-    /* Asymmetric bottom darken: stronger/earlier on the left for text/CTAs */
+    /* Bottom darken + stronger left vignette for wordmark/CTAs */
     .hero::before {
       content: "";
       position: absolute; inset: 0;
@@ -82,18 +82,20 @@
       z-index: 0;
       background:
         linear-gradient(
+          to right,
+          rgba(7, 9, 12, 0.82) 0%,
+          rgba(7, 9, 12, 0.62) 18%,
+          rgba(7, 9, 12, 0.32) 36%,
+          rgba(7, 9, 12, 0.1) 52%,
+          transparent 68%
+        ),
+        linear-gradient(
           185deg,
           transparent 0%,
           transparent 38%,
           rgba(7, 9, 12, 0.35) 58%,
           rgba(7, 9, 12, 0.78) 78%,
           rgba(7, 9, 12, 0.96) 100%
-        ),
-        linear-gradient(
-          105deg,
-          rgba(7, 9, 12, 0.55) 0%,
-          rgba(7, 9, 12, 0.28) 28%,
-          transparent 52%
         ),
         linear-gradient(
           to top,

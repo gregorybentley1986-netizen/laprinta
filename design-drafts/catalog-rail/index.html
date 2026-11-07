@@ -29,22 +29,57 @@
 
     .shell-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0.55rem 1.5rem;
+      padding: 0.75rem 1.5rem;
       background: var(--shell); border-bottom: 1px solid var(--line-dark);
       color: var(--ink-soft);
+      overflow: visible;
+    }
+    .logo {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      overflow: visible;
+      z-index: 2;
+    }
+    /* Soft halo behind logo — visible even when SVG filters fail inside <img> */
+    .logo::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 50%;
+      width: 140%; height: 140%;
+      transform: translate(-50%, -50%);
+      border-radius: 40%;
+      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.28) 0%, rgba(0, 232, 239, 0.08) 42%, transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+      transition: opacity 0.25s ease, filter 0.25s ease;
+      opacity: 0.85;
+      filter: blur(10px);
+    }
+    .logo:hover::before,
+    .logo:focus-visible::before {
+      opacity: 1;
+      filter: blur(14px);
+      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.45) 0%, rgba(0, 232, 239, 0.16) 45%, transparent 72%);
     }
     .logo img {
       height: 96px; width: auto; display: block;
+      position: relative;
+      z-index: 1;
       transition: filter 0.25s ease;
+      /* Idle: subtler but clearly visible */
       filter:
-        drop-shadow(0 0 8px rgba(0, 232, 239, 0.1))
-        drop-shadow(0 0 18px rgba(0, 232, 239, 0.05));
+        drop-shadow(0 0 3px rgba(0, 232, 239, 0.7))
+        drop-shadow(0 0 10px rgba(0, 232, 239, 0.35))
+        drop-shadow(0 0 20px rgba(0, 232, 239, 0.18));
     }
     .logo:hover img,
     .logo:focus-visible img {
+      /* Hover: previous softglow strength, clearly brighter */
       filter:
-        drop-shadow(0 0 10px rgba(0, 232, 239, 0.22))
-        drop-shadow(0 0 22px rgba(0, 232, 239, 0.12));
+        drop-shadow(0 0 4px rgba(0, 232, 239, 0.95))
+        drop-shadow(0 0 12px rgba(0, 232, 239, 0.55))
+        drop-shadow(0 0 28px rgba(0, 232, 239, 0.3));
     }
     .crumb { color: var(--muted); font-size: 0.85rem; }
     .crumb b { color: var(--ink-soft); font-weight: 500; }
