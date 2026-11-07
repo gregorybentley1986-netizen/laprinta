@@ -35,6 +35,13 @@
     }
     .logo img {
       height: 96px; width: auto; display: block;
+      transition: filter 0.25s ease;
+      filter:
+        drop-shadow(0 0 8px rgba(0, 232, 239, 0.1))
+        drop-shadow(0 0 18px rgba(0, 232, 239, 0.05));
+    }
+    .logo:hover img,
+    .logo:focus-visible img {
       filter:
         drop-shadow(0 0 10px rgba(0, 232, 239, 0.22))
         drop-shadow(0 0 22px rgba(0, 232, 239, 0.12));

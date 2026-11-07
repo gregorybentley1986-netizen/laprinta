@@ -33,8 +33,17 @@
       padding-bottom: 1.25rem;
       border-bottom: 1px solid var(--line);
     }
+    header a.logo { display: inline-flex; }
     header img {
       height: 48px; width: auto;
+      transition: filter 0.25s ease;
+      filter:
+        drop-shadow(0 0 8px rgba(0, 232, 239, 0.1))
+        drop-shadow(0 0 18px rgba(0, 232, 239, 0.05));
+    }
+    header a.logo:hover img,
+    header a.logo:focus-visible img,
+    header img:hover {
       filter:
         drop-shadow(0 0 10px rgba(0, 232, 239, 0.22))
         drop-shadow(0 0 22px rgba(0, 232, 239, 0.12));

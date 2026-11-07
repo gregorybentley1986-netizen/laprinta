@@ -281,7 +281,7 @@
          stdDeviation="3.2"
          result="wideBlur" /><feFlood
          flood-color="#00e8ef"
-         flood-opacity="0.22"
+         flood-opacity="0.12"
          result="glowColor" /><feComposite
          in="glowColor"
          in2="wideBlur"
@@ -291,7 +291,7 @@
          stdDeviation="1.4"
          result="midBlur" /><feFlood
          flood-color="#00e8ef"
-         flood-opacity="0.18"
+         flood-opacity="0.08"
          result="midColor" /><feComposite
          in="midColor"
          in2="midBlur"
