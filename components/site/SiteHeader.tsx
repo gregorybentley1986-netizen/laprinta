@@ -1,6 +1,6 @@
 import { buildTree, sectionHref } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
-import { FavoritesLink, MobileMenu, NavLinks, type NavSection } from "./HeaderParts";
+import { CartLink, FavoritesLink, MobileMenu, NavLinks, type NavSection } from "./HeaderParts";
 import { Wordmark } from "./Wordmark";
 
 /** `home` variant: no wordmark (the hero carries it) and transparent overlay on mobile. */
@@ -19,6 +19,7 @@ export async function SiteHeader({ variant = "default" }: { variant?: "home" | "
         <NavLinks />
         <div className="site-header__actions">
           <FavoritesLink />
+          <CartLink />
           <MobileMenu sections={sections} />
         </div>
       </div>

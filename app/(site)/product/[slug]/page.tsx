@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { CatalogNav } from "@/components/site/CatalogNav";
+import { CartButton } from "@/components/site/CartButton";
 import { FavButton } from "@/components/site/FavButton";
 import { ProductGallery, type GalleryItem } from "@/components/site/ProductGallery";
 import { ProductGrid } from "@/components/site/ProductCard";
@@ -137,6 +138,7 @@ export default async function ProductPage({ params }: Props) {
             )}
 
             <div className="buybox__actions">
+              <CartButton id={product.id} name={product.name} variant="buybox" />
               <FavButton slug={product.slug} name={product.name} variant="button" />
               {product.marketplace.ozonUrl && (
                 <a className="btn btn--ink" href={product.marketplace.ozonUrl} target="_blank" rel="noopener noreferrer">

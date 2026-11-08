@@ -30,6 +30,7 @@ export async function SiteFooter() {
           <Link href="/about#production">Производство</Link>
           <Link href="/contacts">Контакты</Link>
           <Link href="/favorites">Избранное</Link>
+          <Link href="/cart">Корзина</Link>
         </nav>
         <div className="site-footer__col">
           <p className="overline">Связаться</p>

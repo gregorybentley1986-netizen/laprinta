@@ -54,6 +54,16 @@ const PATHS = {
     </>
   ),
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  cart: (
+    <>
+      <path d="M3 4.5h2.6l2.1 10.5h10.6l2.2-7.5H6.6" />
+      <circle cx="9.5" cy="19" r="1.3" />
+      <circle cx="17" cy="19" r="1.3" />
+    </>
+  ),
+  minus: <path d="M5 12h14" />,
+  download: <path d="M12 4v11M7 10.5l5 5 5-5M4.5 19.5h15" />,
+  file: <path d="M6 3.5h8l4 4v13H6v-17zM14 3.5v4h4M9 12h6M9 15.5h6" />,
   search: (
     <>
       <circle cx="11" cy="11" r="6.5" />

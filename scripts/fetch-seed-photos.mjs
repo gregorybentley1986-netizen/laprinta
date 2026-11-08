@@ -100,7 +100,7 @@ const lines = [
   "",
   "## Шрифты",
   "",
-  "- Raleway — SIL Open Font License 1.1.",
+  "- Raleway — SIL Open Font License 1.1 (статические начертания для PDF в `assets/fonts/` получены из вариативного шрифта).",
   "- IBM Plex Sans — SIL Open Font License 1.1 (через Google Fonts).",
   "- Arista Pro SemiBold — файл предоставлен заказчиком; используется только для словесного знака `laprinta`.",
   "",

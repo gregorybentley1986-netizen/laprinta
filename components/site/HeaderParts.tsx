@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
 import { site } from "@/lib/site";
 import { Icon } from "@/components/ui/Icon";
@@ -36,6 +37,18 @@ export function FavoritesLink() {
       <Icon name="heart" size={18} />
       <span className="header-fav__label">Избранное</span>
       {ids.length > 0 && <span className="count-badge">{ids.length}</span>}
+    </Link>
+  );
+}
+
+export function CartLink() {
+  const { count } = useCart();
+  const pathname = usePathname();
+  return (
+    <Link href="/cart" className={`header-fav header-cart${pathname === "/cart" ? " is-active" : ""}`} aria-label={`Корзина${count ? `, ${count} шт.` : ""}`}>
+      <Icon name="cart" size={19} />
+      <span className="header-fav__label">Корзина</span>
+      {count > 0 && <span className="count-badge">{count > 99 ? "99+" : count}</span>}
     </Link>
   );
 }
@@ -85,6 +98,10 @@ export function MobileMenu({ sections }: { sections: NavSection[] }) {
             ))}
             <Link href="/favorites" className={pathname === "/favorites" ? "is-active" : undefined}>
               Избранное
+              <Icon name="chevronRight" size={18} />
+            </Link>
+            <Link href="/cart" className={pathname === "/cart" ? "is-active" : undefined}>
+              Корзина
               <Icon name="chevronRight" size={18} />
             </Link>
           </nav>

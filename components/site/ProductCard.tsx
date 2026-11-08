@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CardProduct } from "@/lib/cards";
 import { Icon } from "@/components/ui/Icon";
+import { CartButton } from "./CartButton";
 import { FavButton } from "./FavButton";
 
 const SIZES = "(max-width: 560px) 50vw, (max-width: 1100px) 33vw, 280px";
@@ -54,10 +55,7 @@ export function ProductCard({ product, priority = false }: { product: CardProduc
         <p className="pcard__meta">{product.meta}</p>
         <div className="pcard__foot">
           <span className="pcard__price">{product.price}</span>
-          <span className="pcard__more" aria-hidden="true">
-            Смотреть
-            <Icon name="arrowRight" size={14} />
-          </span>
+          <CartButton id={product.id} name={product.name} />
         </div>
       </div>
       <div className="pcard__fav">
