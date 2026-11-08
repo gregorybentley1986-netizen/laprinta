@@ -1440,7 +1440,8 @@
 }
 .hero-line {
   width: 100%;
-  max-width: min(34rem, 100%);
+  /* 100vw beats broken %-width when an ancestor overflows; keep side padding */
+  max-width: min(34rem, calc(100vw - 2.5rem));
   box-sizing: border-box;
   font-size: clamp(1.05rem, 2vw, 1.2rem);
   color: var(--c-fg-soft);
@@ -1889,7 +1890,7 @@
   .hero-line {
     margin-bottom: 1.1rem;
     width: 100%;
-    max-width: 100%;
+    max-width: calc(100vw - 2.5rem);
     justify-self: stretch;
     white-space: normal;
   }
