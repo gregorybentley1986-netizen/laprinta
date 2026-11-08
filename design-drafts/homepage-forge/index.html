@@ -352,15 +352,15 @@
         --spot: 55vmax;
       }
       .hero-farm { background-position: center 40%; }
-      /* Only tag + wordmark rise under header */
-      .line-tag {
+      /* Only tag + wordmark rise under header (beat .hero > .line-tag relative) */
+      .hero > .line-tag {
         position: absolute;
         top: 5.15rem;
         left: clamp(1.25rem, 4vw, 2.5rem);
         margin-bottom: 0;
         z-index: 4;
       }
-      .brand-wrap {
+      .hero > .brand-wrap {
         position: absolute;
         top: 7.35rem;
         left: clamp(1.25rem, 4vw, 2.5rem);
