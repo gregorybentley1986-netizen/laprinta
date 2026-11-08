@@ -345,14 +345,14 @@
         min-height: calc(100vh + 2px);
         min-height: calc(100svh + 2px);
         min-height: calc(100dvh + 2px);
-        /* Keep subtitle + CTA centered; only tag/wordmark leave the flow */
-        align-content: center;
+        /* Subtitle + CTA pin to bottom; tag/wordmark stay absolute top */
+        align-content: end;
         padding-top: 5.5rem;
-        padding-bottom: 4.5rem;
+        padding-bottom: 2.75rem;
         --spot: 55vmax;
       }
       .hero-farm { background-position: center 40%; }
-      /* Only tag + wordmark rise under header (beat .hero > .line-tag relative) */
+      /* Only tag + wordmark under header */
       .hero > .line-tag {
         position: absolute;
         top: 5.15rem;
@@ -370,20 +370,22 @@
       .brand {
         font-size: clamp(3.4rem, 14vw, 5.2rem);
       }
+      /* Triangle mark — viewport center */
       .brand-mark {
-        width: min(72vw, 22rem);
-        top: 26%;
+        width: min(78vw, 24rem);
+        top: 50%;
       }
-      .brand-mark-glow { top: 28%; }
+      .brand-mark-glow { top: 50%; }
       .hero-idle-glow {
         background: radial-gradient(
-          ellipse 42vmax 38vmax at 50% 28%,
+          ellipse 42vmax 38vmax at 50% 50%,
           rgba(0, 232, 239, 0.18) 0%,
           rgba(0, 232, 239, 0.1) 26%,
           rgba(180, 255, 255, 0.045) 48%,
           transparent 72%
         );
       }
+      .hero-line { margin-bottom: 1.1rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
