@@ -9,6 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
     @font-face {
+      font-family: "Arista Pro SemiBold";
+      src:
+        local("Arista Pro SemiBold"),
+        local("AristaPro-SemiBold"),
+        url("../assets/fonts/AristaPro-SemiBold.ttf") format("truetype");
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
       font-family: "Raleway";
       src: url("../assets/fonts/Raleway-Variable.ttf") format("truetype");
       font-weight: 500 700;
@@ -27,6 +37,7 @@
       --line: #d5dbe3;
       --accent: #00e8ef;
       --heading: "Raleway", sans-serif; /* LOCKED — Cyrillic headings */
+      --brand: "Arista Pro SemiBold", sans-serif;
       --body: "IBM Plex Sans", sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,49 +62,23 @@
     .logo {
       position: relative;
       display: inline-flex;
-      align-items: center;
+      align-items: baseline;
       overflow: visible;
       z-index: 2;
+      font-family: var(--brand);
+      font-weight: 600;
+      font-size: clamp(1.65rem, 3.5vw, 2.1rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink-soft);
+      text-shadow: 0 0 18px rgba(0, 232, 239, 0.22);
     }
-    /* Soft halo behind logo — visible even when SVG filters fail inside <img> */
-    .logo::before {
-      content: "";
-      position: absolute;
-      left: 50%; top: 50%;
-      width: 140%; height: 140%;
-      transform: translate(-50%, -50%);
-      border-radius: 40%;
-      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.28) 0%, rgba(0, 232, 239, 0.08) 42%, transparent 70%);
-      pointer-events: none;
-      z-index: -1;
-      transition: opacity 0.25s ease, filter 0.25s ease;
-      opacity: 0.85;
-      filter: blur(10px);
-    }
-    .logo:hover::before,
-    .logo:focus-visible::before {
-      opacity: 1;
-      filter: blur(14px);
-      background: radial-gradient(ellipse at center, rgba(0, 232, 239, 0.45) 0%, rgba(0, 232, 239, 0.16) 45%, transparent 72%);
-    }
-    .logo img {
-      height: 96px; width: auto; display: block;
-      position: relative;
-      z-index: 1;
-      transition: filter 0.25s ease;
-      /* Idle: subtler but clearly visible */
-      filter:
-        drop-shadow(0 0 3px rgba(0, 232, 239, 0.7))
-        drop-shadow(0 0 10px rgba(0, 232, 239, 0.35))
-        drop-shadow(0 0 20px rgba(0, 232, 239, 0.18));
-    }
-    .logo:hover img,
-    .logo:focus-visible img {
-      /* Hover: previous softglow strength, clearly brighter */
-      filter:
-        drop-shadow(0 0 4px rgba(0, 232, 239, 0.95))
-        drop-shadow(0 0 12px rgba(0, 232, 239, 0.55))
-        drop-shadow(0 0 28px rgba(0, 232, 239, 0.3));
+    .logo span { color: var(--accent); }
+    .logo:hover,
+    .logo:focus-visible {
+      text-shadow:
+        0 0 10px rgba(0, 232, 239, 0.45),
+        0 0 28px rgba(0, 232, 239, 0.28);
     }
     .crumb { color: var(--muted); font-size: 0.85rem; }
     .crumb b { color: var(--ink-soft); font-weight: 500; }
@@ -223,9 +208,7 @@
 </head>
 <body>
   <header class="shell-header">
-    <a class="logo" href="../homepage-forge/index.html" aria-label="laprinta">
-      <img src="../assets/laprinta-logo.svg" alt="laprinta" height="72" />
-    </a>
+    <a class="logo" href="../homepage-forge/index.html" aria-label="laprinta">la<span>printa</span></a>
     <div class="crumb">Каталог / <b>Поплавки</b></div>
     <a class="fav" href="#" aria-label="Избранное">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
