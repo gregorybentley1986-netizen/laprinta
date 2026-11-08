@@ -3,9 +3,10 @@
 // Usage: node scripts/seed.mjs [--force]   (--force wipes existing data)
 import { copyFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { products, sections } from "../seed/catalog.mjs";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.resolve(process.env.DATA_DIR ?? path.join(root, "storage"));
 const dbFile = path.join(dataDir, "db.json");
 const uploadDir = path.join(dataDir, "uploads");

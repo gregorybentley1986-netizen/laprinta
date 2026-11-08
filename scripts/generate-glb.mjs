@@ -3,8 +3,9 @@
 // Each float is a lathe: keel → two-tone body → banded antenna.
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.join(root, "seed/media/models");
 
 const RADIAL = 48;

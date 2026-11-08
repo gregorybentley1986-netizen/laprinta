@@ -3,8 +3,9 @@
 import { spawnSync } from "node:child_process";
 import { stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dataDir = path.resolve(process.env.DATA_DIR ?? path.join(root, "storage"));
 const hasDb = await stat(path.join(dataDir, "db.json")).catch(() => null);
 
