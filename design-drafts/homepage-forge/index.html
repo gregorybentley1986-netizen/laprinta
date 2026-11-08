@@ -100,22 +100,39 @@
       filter: brightness(0.42) contrast(1.08) saturate(0.92);
     }
 
-    /* Cursor spotlight: lights the farm photo only (sibling under .hero-bg) */
+    /* (A) Idle farm glow under triangle — always on, never follows cursor */
+    .hero-idle-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 42vmax 38vmax at 50% 45%,
+        rgba(0, 232, 239, 0.18) 0%,
+        rgba(0, 232, 239, 0.1) 26%,
+        rgba(180, 255, 255, 0.045) 48%,
+        transparent 72%
+      );
+      mix-blend-mode: screen;
+    }
+
+    /* (B) Cursor spotlight on farm — additive, only while pointer is over hero */
     .hero-spot {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background:
-        radial-gradient(
-          circle var(--spot) at var(--mx) var(--my),
-          transparent 0%,
-          transparent 16%,
-          rgba(7, 9, 12, 0.28) 38%,
-          rgba(7, 9, 12, 0.62) 58%,
-          rgba(7, 9, 12, 0.86) 78%,
-          rgba(7, 9, 12, 0.92) 100%
-        );
-      transition: background 40ms linear;
+      opacity: 0;
+      background: radial-gradient(
+        circle var(--spot) at var(--mx) var(--my),
+        rgba(0, 232, 239, 0.2) 0%,
+        rgba(200, 255, 255, 0.11) 16%,
+        rgba(0, 232, 239, 0.045) 38%,
+        transparent 58%
+      );
+      mix-blend-mode: screen;
+      transition: opacity 0.18s ease, background 40ms linear;
+    }
+    .hero.is-pointer .hero-spot {
+      opacity: 1;
     }
 
     /* Left + bottom vignettes for copy — below the mark so they never cover it */
@@ -170,7 +187,7 @@
       user-select: none;
       overflow: visible;
     }
-    /* Soft far glow — no hard circle (wide ellipse + heavy blur + long falloff) */
+    /* Soft far glow on mark — permanent idle (not tied to cursor) */
     .brand-mark-glow {
       position: absolute;
       left: 50%;
@@ -182,11 +199,11 @@
       z-index: 0;
       background: radial-gradient(
         ellipse 70% 62% at 50% 44%,
-        rgba(0, 232, 239, 0.14) 0%,
-        rgba(0, 232, 239, 0.09) 22%,
-        rgba(0, 232, 239, 0.045) 42%,
-        rgba(0, 232, 239, 0.02) 62%,
-        rgba(0, 232, 239, 0.006) 78%,
+        rgba(0, 232, 239, 0.16) 0%,
+        rgba(0, 232, 239, 0.1) 22%,
+        rgba(0, 232, 239, 0.05) 42%,
+        rgba(0, 232, 239, 0.022) 62%,
+        rgba(0, 232, 239, 0.007) 78%,
         transparent 92%
       );
       filter: blur(56px);
@@ -331,6 +348,7 @@
     <section class="hero" id="hero">
       <div class="hero-bg" aria-hidden="true">
         <div class="hero-farm"></div>
+        <div class="hero-idle-glow"></div>
         <div class="hero-spot"></div>
       </div>
       <div class="brand-mark" aria-hidden="true">
@@ -426,8 +444,9 @@
       if (!hero) return;
       var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       var raf = 0;
-      var nextX = 50;
-      var nextY = 45;
+      var nextX = 72;
+      var nextY = 58;
+      var params = new URLSearchParams(window.location.search);
 
       function apply() {
         raf = 0;
@@ -444,6 +463,7 @@
         if (nextX > 100) nextX = 100;
         if (nextY < 0) nextY = 0;
         if (nextY > 100) nextY = 100;
+        hero.classList.add("is-pointer");
         if (!raf) raf = requestAnimationFrame(apply);
       }
 
@@ -451,21 +471,35 @@
         onMove(e.clientX, e.clientY);
       }, { passive: true });
 
+      hero.addEventListener("mouseenter", function (e) {
+        onMove(e.clientX, e.clientY);
+      }, { passive: true });
+
+      /* Idle triangle glow stays; only the additive cursor spot turns off */
       hero.addEventListener("mouseleave", function () {
-        nextX = 50;
-        nextY = 45;
-        if (!raf) raf = requestAnimationFrame(apply);
+        hero.classList.remove("is-pointer");
       });
+
+      hero.addEventListener("touchstart", function (e) {
+        if (!e.touches || !e.touches[0]) return;
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
 
       hero.addEventListener("touchmove", function (e) {
         if (!e.touches || !e.touches[0]) return;
         onMove(e.touches[0].clientX, e.touches[0].clientY);
       }, { passive: true });
 
-      // Resting spotlight on aisle / mark for first paint & screenshots
-      if (!reduce) {
-        hero.style.setProperty("--mx", "50%");
-        hero.style.setProperty("--my", "45%");
+      hero.addEventListener("touchend", function () {
+        hero.classList.remove("is-pointer");
+      }, { passive: true });
+
+      /* Screenshot / demo: ?demo=cursor forces additive spot off-triangle */
+      if (params.get("demo") === "cursor" && !reduce) {
+        nextX = 72;
+        nextY = 58;
+        hero.classList.add("is-pointer");
+        apply();
       }
     })();
   </script>
