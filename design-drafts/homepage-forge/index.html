@@ -352,17 +352,17 @@
         --spot: 55vmax;
       }
       .hero-farm { background-position: center 40%; }
-      /* Only tag + wordmark under header */
+      /* Tag + wordmark — tight under overlay header / safe-area */
       .hero > .line-tag {
         position: absolute;
-        top: 5.15rem;
+        top: calc(3.55rem + env(safe-area-inset-top, 0px));
         left: clamp(1.25rem, 4vw, 2.5rem);
         margin-bottom: 0;
         z-index: 4;
       }
       .hero > .brand-wrap {
         position: absolute;
-        top: 7.35rem;
+        top: calc(5.35rem + env(safe-area-inset-top, 0px));
         left: clamp(1.25rem, 4vw, 2.5rem);
         margin-bottom: 0;
         z-index: 4;
