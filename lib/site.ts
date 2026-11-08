@@ -7,6 +7,7 @@ export const site = {
   email: "info@laprinta.ru",
   nav: [
     { href: "/catalog", label: "Каталог" },
+    { href: "/articles", label: "Статьи" },
     { href: "/about", label: "О компании" },
     { href: "/contacts", label: "Контакты" },
   ],

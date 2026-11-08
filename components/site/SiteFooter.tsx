@@ -28,6 +28,7 @@ export async function SiteFooter() {
           <p className="overline">Компания</p>
           <Link href="/about">О компании</Link>
           <Link href="/about#production">Производство</Link>
+          <Link href="/articles">Статьи</Link>
           <Link href="/contacts">Контакты</Link>
           <Link href="/favorites">Избранное</Link>
           <Link href="/cart">Корзина</Link>

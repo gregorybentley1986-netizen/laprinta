@@ -54,10 +54,32 @@ export type Product = {
   updatedAt: string;
 };
 
+export type ArticleStatus = "published" | "draft";
+
+export type Article = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  coverUrl: string | null;
+  coverAlt: string;
+  /** Sanitized HTML produced by the admin rich-text editor. */
+  bodyHtml: string;
+  status: ArticleStatus;
+  /** YYYY-MM-DD; a published article stays hidden until this date (Moscow time). */
+  publishedAt: string;
+  sortOrder: number;
+  relatedProductIds: string[];
+  seo: { title: string; description: string };
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Database = {
   version: 1;
   sections: CatalogSection[];
   products: Product[];
+  articles: Article[];
 };
 
 export type SectionNode = CatalogSection & { children: SectionNode[]; productCount: number };

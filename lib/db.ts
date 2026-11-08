@@ -11,13 +11,14 @@ import type { Database } from "./types";
 let cache: { mtimeMs: number; data: Database } | null = null;
 let queue: Promise<unknown> = Promise.resolve();
 
-const EMPTY: Database = { version: 1, sections: [], products: [] };
+const EMPTY: Database = { version: 1, sections: [], products: [], articles: [] };
 
 export async function readDb(): Promise<Database> {
   try {
     const s = await stat(DB_FILE);
     if (cache && cache.mtimeMs === s.mtimeMs) return cache.data;
     const data = JSON.parse(await readFile(DB_FILE, "utf8")) as Database;
+    data.articles ??= [];
     cache = { mtimeMs: s.mtimeMs, data };
     return data;
   } catch (err) {

@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 const ITEMS = [
   { href: "/admin/products", label: "Товары", icon: "box" as const },
   { href: "/admin/sections", label: "Разделы", icon: "folder" as const },
+  { href: "/admin/articles", label: "Статьи", icon: "file" as const },
 ];
 
 export function AdminNav() {

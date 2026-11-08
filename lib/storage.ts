@@ -24,7 +24,14 @@ export const ACCEPT = ".jpg,.jpeg,.png,.webp,.mp4,.webm,.glb";
 
 export class UploadError extends Error {}
 
+export type UploadScope = "products" | "articles";
+
 export async function saveUpload(productId: string, file: File, sortOrder: number): Promise<ProductMedia> {
+  return saveScopedUpload("products", productId, file, sortOrder);
+}
+
+export async function saveScopedUpload(scope: UploadScope, ownerId: string, file: File, sortOrder = 0): Promise<ProductMedia> {
+  if (!/^[a-z0-9-]{1,48}$/.test(ownerId)) throw new UploadError("Некорректный идентификатор");
   const ext = path.extname(file.name).slice(1).toLowerCase();
   if (ext === "stl") throw new UploadError(`${file.name}: STL не поддерживается — загрузите модель в формате GLB (glTF 2.0).`);
   const rule = RULES[ext];
@@ -36,14 +43,14 @@ export async function saveUpload(productId: string, file: File, sortOrder: numbe
 
   const id = newId();
   const name = `${id}.${ext === "jpeg" ? "jpg" : ext}`;
-  const dir = path.join(UPLOAD_DIR, "products", productId);
+  const dir = path.join(UPLOAD_DIR, scope, ownerId);
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), buf);
 
   const media: ProductMedia = {
     id,
     type: rule.type,
-    url: `${MEDIA_PREFIX}products/${productId}/${name}`,
+    url: `${MEDIA_PREFIX}${scope}/${ownerId}/${name}`,
     mime: rule.mime,
     bytes: file.size,
     sortOrder,
@@ -70,4 +77,9 @@ export async function deleteUpload(url: string) {
 
 export async function deleteProductUploads(productId: string) {
   await rm(path.join(UPLOAD_DIR, "products", productId), { recursive: true, force: true });
+}
+
+export async function deleteArticleUploads(articleId: string) {
+  if (!/^[a-z0-9-]{1,48}$/.test(articleId)) return;
+  await rm(path.join(UPLOAD_DIR, "articles", articleId), { recursive: true, force: true });
 }

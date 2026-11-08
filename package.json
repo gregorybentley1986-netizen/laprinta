@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "seed": "node scripts/seed.mjs --force",
+    "seed:articles": "node scripts/seed.mjs --articles",
     "seed:fetch": "node scripts/fetch-seed-photos.mjs",
     "seed:glb": "node scripts/generate-glb.mjs",
     "typecheck": "tsc --noEmit"
@@ -19,10 +20,17 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@google/model-viewer": "^4.1.0",
+    "@tiptap/extension-placeholder": "^3.33.0",
+    "@tiptap/extension-table": "^3.33.0",
+    "@tiptap/extension-text-align": "^3.33.0",
+    "@tiptap/pm": "^3.33.0",
+    "@tiptap/react": "^3.33.0",
+    "@tiptap/starter-kit": "^3.33.0",
     "next": "15.5.29",
     "pdfkit": "^0.17.2",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "sanitize-html": "^2.18.1",
     "server-only": "^0.0.1",
     "three": "^0.183.2"
   },
@@ -31,6 +39,7 @@
     "@types/pdfkit": "^0.17.7",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@types/sanitize-html": "^2.16.2",
     "sharp": "^0.35.5",
     "typescript": "^5.7.0"
   },
