@@ -1314,9 +1314,11 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-content: center;
-  justify-items: start;
+  /* stretch so in-flow copy (.hero-line) uses the full content column and wraps */
+  justify-items: stretch;
   padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: hidden;
   background-color: var(--c-bg);
 }
 .hero-bg {
@@ -1373,12 +1375,18 @@
     linear-gradient(to top, rgba(7, 9, 12, 0.9) 0%, rgba(7, 9, 12, 0.5) 20%, transparent 46%);
 }
 .hero > .line-tag,
-.hero > .brand-wrap,
+.hero > .brand-wrap {
+  position: relative;
+  z-index: 4;
+  justify-self: start;
+  min-width: 0;
+  max-width: 100%;
+}
 .hero > .hero-line,
 .hero > .hero-meta {
   position: relative;
   z-index: 4;
-  /* Grid default min-width:auto was clipping long copy on narrow viewports */
+  justify-self: stretch;
   min-width: 0;
   max-width: 100%;
 }
@@ -1439,23 +1447,27 @@
   color: var(--c-accent);
 }
 .hero-line {
+  display: block;
   width: 100%;
-  /* 100vw beats broken %-width when an ancestor overflows; keep side padding */
-  max-width: min(34rem, calc(100vw - 2.5rem));
+  max-width: min(34rem, 100%);
   box-sizing: border-box;
   font-size: clamp(1.05rem, 2vw, 1.2rem);
   color: var(--c-fg-soft);
   margin-bottom: 1.75rem;
   text-shadow: 0 1px 14px rgba(7, 9, 12, 0.75);
   white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.85rem 1.5rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 .cta {
   display: inline-flex;
@@ -1890,9 +1902,12 @@
   .hero-line {
     margin-bottom: 1.1rem;
     width: 100%;
-    max-width: calc(100vw - 2.5rem);
-    justify-self: stretch;
+    max-width: 100%;
     white-space: normal;
+  }
+  .hero-meta {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
