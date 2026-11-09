@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>laprinta — главная · Forge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: "Arista Pro SemiBold";
+      src:
+        local("Arista Pro SemiBold"),
+        local("AristaPro-SemiBold"),
+        url("../assets/fonts/AristaPro-SemiBold.ttf") format("truetype");
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Raleway";
+      src: url("../assets/fonts/Raleway-Variable.ttf") format("truetype");
+      font-weight: 500 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    :root {
+      --shell: #07090c;
+      --content: #f3f5f7;
+      --ink: #10151b;
+      --ink-soft: #e8eef2;
+      --muted: #8b959f;
+      --muted-on-light: #5c6772;
+      --line-dark: rgba(232, 238, 242, 0.1);
+      --accent: #00e8ef;
+      --accent-dim: rgba(0, 232, 239, 0.14);
+      --ui: "IBM Plex Sans", sans-serif;
+      --heading: "Raleway", sans-serif; /* LOCKED — Cyrillic headings */
+      --brand: "Arista Pro SemiBold", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      background: #07090c;
+    }
+    body {
+      font-family: var(--ui);
+      background: var(--shell);
+      color: var(--ink-soft);
+      line-height: 1.5;
+      min-height: 100%;
+      min-height: 100svh;
+      min-height: 100dvh;
+      overflow-x: clip;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .shell-header {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem;
+      padding: 0.95rem clamp(1.25rem, 4vw, 2.5rem);
+      background: var(--shell);
+      border-bottom: 1px solid var(--line-dark);
+    }
+    .nav { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--muted); }
+    .nav a:hover { color: var(--ink-soft); }
+    .nav a.on { color: var(--accent); }
+    .fav {
+      color: var(--muted);
+      font-size: 0.85rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 0.2rem;
+      margin-left: auto;
+    }
+    .fav:hover { color: var(--accent); }
+    .fav svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+
+    .hero {
+      --mx: 50%;
+      --my: 45%;
+      --spot: 34vmax;
+      --header-h: 3.65rem;
+      position: relative;
+      /* Fill first viewport under header; light content-band only after scroll */
+      min-height: calc(100vh - var(--header-h));
+      min-height: calc(100svh - var(--header-h));
+      min-height: calc(100dvh - var(--header-h));
+      display: grid;
+      align-content: center;
+      padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
+      overflow: hidden;
+      background-color: #07090c;
+    }
+
+    /* BG stack only — spotlight cannot cover the triangle */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hero-farm {
+      position: absolute;
+      inset: 0;
+      background-image: url("../assets/farm-aisle-neon-sketch.png");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      filter: brightness(0.42) contrast(1.08) saturate(0.92);
+    }
+
+    /* (A) Idle farm glow under triangle — always on, never follows cursor */
+    .hero-idle-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(
+        ellipse 42vmax 38vmax at 50% 45%,
+        rgba(0, 232, 239, 0.18) 0%,
+        rgba(0, 232, 239, 0.1) 26%,
+        rgba(180, 255, 255, 0.045) 48%,
+        transparent 72%
+      );
+      mix-blend-mode: screen;
+    }
+
+    /* (B) Cursor spotlight on farm — additive, only while pointer is over hero */
+    .hero-spot {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(
+        circle var(--spot) at var(--mx) var(--my),
+        rgba(0, 232, 239, 0.2) 0%,
+        rgba(200, 255, 255, 0.11) 16%,
+        rgba(0, 232, 239, 0.045) 38%,
+        transparent 58%
+      );
+      mix-blend-mode: screen;
+      transition: opacity 0.18s ease, background 40ms linear;
+    }
+    .hero.is-pointer .hero-spot {
+      opacity: 1;
+    }
+
+    /* Left + bottom vignettes for copy — below the mark so they never cover it */
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background:
+        linear-gradient(
+          to right,
+          rgba(7, 9, 12, 0.78) 0%,
+          rgba(7, 9, 12, 0.55) 16%,
+          rgba(7, 9, 12, 0.25) 32%,
+          rgba(7, 9, 12, 0.08) 48%,
+          transparent 64%
+        ),
+        linear-gradient(
+          185deg,
+          transparent 0%,
+          transparent 40%,
+          rgba(7, 9, 12, 0.3) 58%,
+          rgba(7, 9, 12, 0.72) 78%,
+          rgba(7, 9, 12, 0.95) 100%
+        ),
+        linear-gradient(
+          to top,
+          rgba(7, 9, 12, 0.9) 0%,
+          rgba(7, 9, 12, 0.5) 20%,
+          transparent 46%
+        );
+    }
+
+    .hero > .line-tag,
+    .hero > .brand-wrap,
+    .hero > .hero-line,
+    .hero > .hero-meta {
+      position: relative;
+      z-index: 4;
+    }
+
+    /* Above farm + spotlight + vignette — bg darkening never covers the mark */
+    .brand-mark {
+      position: absolute;
+      left: 50%;
+      top: 45%;
+      width: clamp(18rem, 40vw, 32rem);
+      height: auto;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 3;
+      user-select: none;
+      overflow: visible;
+    }
+    /* Soft far glow on mark — permanent idle (not tied to cursor) */
+    .brand-mark-glow {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      width: 220%;
+      height: 210%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+      background: radial-gradient(
+        ellipse 70% 62% at 50% 44%,
+        rgba(0, 232, 239, 0.16) 0%,
+        rgba(0, 232, 239, 0.1) 22%,
+        rgba(0, 232, 239, 0.05) 42%,
+        rgba(0, 232, 239, 0.022) 62%,
+        rgba(0, 232, 239, 0.007) 78%,
+        transparent 92%
+      );
+      filter: blur(56px);
+    }
+    .brand-mark svg {
+      position: relative;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+    .brand-mark .mark-sheen {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .brand-wrap {
+      position: relative;
+      display: inline-block;
+      margin: 0 0 1.25rem;
+      overflow: visible;
+    }
+    .brand {
+      position: relative;
+      z-index: 1;
+      font-family: var(--brand);
+      font-weight: 600;
+      font-size: clamp(4.2rem, 13vw, 9.5rem);
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      text-transform: none;
+      margin: 0;
+      text-shadow: 0 2px 22px rgba(7, 9, 12, 0.65);
+    }
+    .brand span { color: var(--accent); }
+    .hero-line {
+      max-width: 34rem;
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: #c5ced6;
+      margin-bottom: 1.75rem;
+      text-shadow: 0 1px 14px rgba(7, 9, 12, 0.75);
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: 0.85rem 1.25rem; align-items: center;
+    }
+    .cta {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent); color: #041214;
+      font-weight: 600; font-size: 0.95rem;
+      padding: 0.9rem 1.3rem;
+      transition: filter 0.2s, transform 0.2s;
+    }
+    .cta:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .cta-ghost {
+      color: var(--muted); font-size: 0.9rem;
+      border-bottom: 1px solid var(--line-dark); padding-bottom: 0.15rem;
+    }
+    .cta-ghost:hover { color: var(--ink-soft); }
+    .line-tag {
+      display: inline-block;
+      font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(0, 232, 239, 0.35);
+      padding: 0.4rem 0.75rem;
+      margin-bottom: 1.25rem;
+      background: rgba(7, 9, 12, 0.32);
+      backdrop-filter: blur(4px) saturate(1.05);
+      -webkit-backdrop-filter: blur(4px) saturate(1.05);
+      box-shadow: 0 1px 0 rgba(232, 238, 242, 0.04) inset;
+    }
+
+    .content-band {
+      background: var(--content);
+      color: var(--ink);
+      padding: 4.5rem clamp(1.25rem, 4vw, 2.5rem);
+    }
+    .content-band h2 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: clamp(1.7rem, 3.5vw, 2.5rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+    }
+    .content-band .lead { color: var(--muted-on-light); max-width: 36rem; margin-bottom: 2.25rem; }
+    .cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.75rem; }
+    .cols article {
+      padding-top: 1rem;
+      border-top: 2px solid var(--accent);
+    }
+    .cols h3 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+    .cols p { color: var(--muted-on-light); font-size: 0.95rem; margin-bottom: 0.75rem; }
+    .cols .more {
+      font-size: 0.88rem; font-weight: 500; color: #0a8f96;
+    }
+    .cols .more:hover { color: var(--ink); }
+
+    footer {
+      background: var(--shell);
+      border-top: 1px solid var(--line-dark);
+      padding: 1.35rem clamp(1.25rem, 4vw, 2.5rem);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;
+      color: var(--muted); font-size: 0.85rem;
+    }
+    footer a { color: var(--muted); border-bottom: 1px solid transparent; }
+    footer a:hover { color: var(--accent); border-bottom-color: rgba(0,232,239,0.35); }
+
+    @media (max-width: 860px) {
+      .nav { display: none; }
+      .cols { grid-template-columns: 1fr; }
+      /* Header overlays hero so first screen is one full black viewport */
+      .shell-header {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        z-index: 6;
+        background: transparent;
+        border-bottom-color: transparent;
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+      }
+      .hero {
+        /* +2px kills subpixel white content-band edge at the fold */
+        min-height: calc(100vh + 2px);
+        min-height: calc(100svh + 2px);
+        min-height: calc(100dvh + 2px);
+        /* Subtitle + CTA pin to bottom; tag/wordmark stay absolute top */
+        align-content: end;
+        padding-top: 5.5rem;
+        padding-bottom: 2.75rem;
+        --spot: 55vmax;
+      }
+      .hero-farm { background-position: center 40%; }
+      /* Tag + wordmark — tight under overlay header / safe-area */
+      .hero > .line-tag {
+        position: absolute;
+        top: calc(3.55rem + env(safe-area-inset-top, 0px));
+        left: clamp(1.25rem, 4vw, 2.5rem);
+        margin-bottom: 0;
+        z-index: 4;
+      }
+      .hero > .brand-wrap {
+        position: absolute;
+        top: calc(5.35rem + env(safe-area-inset-top, 0px));
+        left: clamp(1.25rem, 4vw, 2.5rem);
+        margin-bottom: 0;
+        z-index: 4;
+      }
+      .brand {
+        font-size: clamp(3.4rem, 14vw, 5.2rem);
+      }
+      /* Triangle mark — viewport center */
+      .brand-mark {
+        width: min(78vw, 24rem);
+        top: 50%;
+      }
+      .brand-mark-glow { top: 50%; }
+      .hero-idle-glow {
+        background: radial-gradient(
+          ellipse 42vmax 38vmax at 50% 50%,
+          rgba(0, 232, 239, 0.18) 0%,
+          rgba(0, 232, 239, 0.1) 26%,
+          rgba(180, 255, 255, 0.045) 48%,
+          transparent 72%
+        );
+      }
+      .hero-line { margin-bottom: 1.1rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .brand-mark .sheen-anim { display: none; }
+      .hero-spot { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-header">
+    <nav class="nav" aria-label="Основное">
+      <a class="on" href="../catalog-rail/index.html">Каталог</a>
+      <a href="#">Производство</a>
+      <a href="#">О компании</a>
+    </nav>
+    <a class="fav" href="#" title="Избранное" aria-label="Избранное">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      Избранное
+    </a>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="hero-farm"></div>
+        <div class="hero-idle-glow"></div>
+        <div class="hero-spot"></div>
+      </div>
+      <div class="brand-mark" aria-hidden="true">
+        <div class="brand-mark-glow"></div>
+        <svg viewBox="10 -8 40 40" fill="none" overflow="visible" aria-hidden="true">
+          <defs>
+            <!-- LOCKED mark gradient — match homepage-forge-20261107-gradient-locked.png; do not edit -->
+            <linearGradient id="metalLevel" gradientUnits="userSpaceOnUse" x1="30" y1="-4" x2="30" y2="27">
+              <stop offset="0%" stop-color="#f2ffff" stop-opacity="0.98" />
+              <stop offset="28%" stop-color="#6eeff4" stop-opacity="0.88" />
+              <stop offset="62%" stop-color="#1299a1" stop-opacity="0.55" />
+              <stop offset="100%" stop-color="#041214" stop-opacity="0.18" />
+            </linearGradient>
+            <radialGradient id="metalRadial" gradientUnits="userSpaceOnUse" cx="30" cy="4" r="18">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+              <stop offset="40%" stop-color="#b8fbff" stop-opacity="0.12" />
+              <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
+            </radialGradient>
+            <!-- Diagonal TL→BR stretched sheen; one-way (no reverse) -->
+            <linearGradient id="metalSheen" gradientUnits="userSpaceOnUse" x1="6" y1="-10" x2="54" y2="34">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="28%" stop-color="#ffffff" stop-opacity="0" />
+              <stop offset="42%" stop-color="#eaffff" stop-opacity="0.12" />
+              <stop offset="50%" stop-color="#ffffff" stop-opacity="0.7" />
+              <stop offset="58%" stop-color="#c5fcff" stop-opacity="0.12" />
+              <stop offset="72%" stop-color="#00e8ef" stop-opacity="0" />
+              <stop offset="100%" stop-color="#00e8ef" stop-opacity="0" />
+              <animateTransform attributeName="gradientTransform" type="translate"
+                from="-56 -56" to="56 56" dur="5.6s" repeatCount="indefinite" />
+            </linearGradient>
+            <mask id="markSilhouette" maskUnits="userSpaceOnUse" x="8" y="-10" width="44" height="44" maskContentUnits="userSpaceOnUse">
+              <rect x="8" y="-10" width="44" height="44" fill="#000" />
+              <g fill="none" stroke="#fff" stroke-linejoin="round" stroke-linecap="round">
+                <g transform="translate(-23.47549,-8.6930421)">
+                  <g transform="translate(12.93681,4.1907975)">
+                    <path transform="matrix(0.71878205,0,0,0.71878205,6.6901649,12.085315)" stroke-width="2.78248" d="M 61.359483,25.481389 H 55.887031 32.952078 a 5.0409894,5.0409894 60 0 1 -4.365625,-7.561484 l 2.736226,-4.739283 11.467477,-19.8622519 a 5.0409895,5.0409895 7.0701838e-7 0 1 8.73125,1e-7 l 2.736226,4.7392831 11.467476,19.8622517 a 5.0409895,5.0409895 120 0 1 -4.365625,7.561484 z" />
+                    <path transform="matrix(0.22862813,0,0,0.22862813,29.711147,18.10475)" stroke-width="8.74783" d="M 67.641167,25.481389 H 49.605347 26.670394 A 1.4142577,1.4142577 60 0 1 25.445611,23.360002 L 34.463521,7.7405247 45.930998,-12.121727 a 1.4142577,1.4142577 7.0701843e-7 0 1 2.449566,0 L 57.398474,3.4977509 68.86595,23.360002 a 1.4142577,1.4142577 120 0 1 -1.224783,2.121387 z" />
+                    <path stroke-width="2" d="M 40.219594,15.310243 C 44.29437,8.4572109 44.29437,8.4572109 44.29437,8.4572109" />
+                  </g>
+                </g>
+              </g>
+            </mask>
+          </defs>
+          <g mask="url(#markSilhouette)">
+            <rect x="10" y="-8" width="40" height="40" fill="url(#metalLevel)" />
+            <rect x="10" y="-8" width="40" height="40" fill="url(#metalRadial)" />
+            <rect class="sheen-anim mark-sheen" x="10" y="-8" width="40" height="40" fill="url(#metalSheen)" />
+          </g>
+        </svg>
+      </div>
+      <div class="line-tag">аддитивные технологии</div>
+      <div class="brand-wrap">
+        <h1 class="brand">la<span>printa</span></h1>
+      </div>
+      <p class="hero-line">Изделия из пластика и термополиуретана изготовленные методом аддитивных технологий.</p>
+      <div class="hero-meta">
+        <a class="cta" href="../catalog-rail/index.html">Открыть каталог <span aria-hidden="true">→</span></a>
+        <a class="cta-ghost" href="../catalog-rail/index.html">Смотреть серии</a>
+      </div>
+    </section>
+
+    <section class="content-band">
+      <h2>Серийные изделия в каталоге</h2>
+      <p class="lead">Пластик и термополиуретан — готовые модели для сравнения серий. Каталог в центре внимания.</p>
+      <div class="cols">
+        <article>
+          <h3>Пластик</h3>
+          <p>Серийные детали и корпуса, напечатанные аддитивным методом.</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+        <article>
+          <h3>Термополиуретан</h3>
+          <p>Гибкие и износостойкие изделия из ТПУ под задачу применения.</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+        <article>
+          <h3>Серии моделей</h3>
+          <p>Единый каталог laprinta — сравнивайте и открывайте карточки изделий.</p>
+          <a class="more" href="../catalog-rail/index.html">Смотреть модели →</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 laprinta · laprinta.ru</span>
+    <a href="#">Связаться</a>
+  </footer>
+
+  <script>
+    (function () {
+      var hero = document.getElementById("hero");
+      if (!hero) return;
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var raf = 0;
+      var nextX = 72;
+      var nextY = 58;
+      var params = new URLSearchParams(window.location.search);
+
+      function apply() {
+        raf = 0;
+        hero.style.setProperty("--mx", nextX.toFixed(2) + "%");
+        hero.style.setProperty("--my", nextY.toFixed(2) + "%");
+      }
+
+      function onMove(clientX, clientY) {
+        var r = hero.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) return;
+        nextX = ((clientX - r.left) / r.width) * 100;
+        nextY = ((clientY - r.top) / r.height) * 100;
+        if (nextX < 0) nextX = 0;
+        if (nextX > 100) nextX = 100;
+        if (nextY < 0) nextY = 0;
+        if (nextY > 100) nextY = 100;
+        hero.classList.add("is-pointer");
+        if (!raf) raf = requestAnimationFrame(apply);
+      }
+
+      hero.addEventListener("mousemove", function (e) {
+        onMove(e.clientX, e.clientY);
+      }, { passive: true });
+
+      hero.addEventListener("mouseenter", function (e) {
+        onMove(e.clientX, e.clientY);
+      }, { passive: true });
+
+      /* Idle triangle glow stays; only the additive cursor spot turns off */
+      hero.addEventListener("mouseleave", function () {
+        hero.classList.remove("is-pointer");
+      });
+
+      hero.addEventListener("touchstart", function (e) {
+        if (!e.touches || !e.touches[0]) return;
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      hero.addEventListener("touchmove", function (e) {
+        if (!e.touches || !e.touches[0]) return;
+        onMove(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+
+      hero.addEventListener("touchend", function () {
+        hero.classList.remove("is-pointer");
+      }, { passive: true });
+
+      /* Screenshot / demo: ?demo=cursor forces additive spot off-triangle */
+      if (params.get("demo") === "cursor" && !reduce) {
+        nextX = 72;
+        nextY = 58;
+        hero.classList.add("is-pointer");
+        apply();
+      }
+    })();
+  </script>
+</body>
+</html>

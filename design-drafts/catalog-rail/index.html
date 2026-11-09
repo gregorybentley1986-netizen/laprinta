@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Каталог поплавков — Rail · laprinta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: "Arista Pro SemiBold";
+      src:
+        local("Arista Pro SemiBold"),
+        local("AristaPro-SemiBold"),
+        url("../assets/fonts/AristaPro-SemiBold.ttf") format("truetype");
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Raleway";
+      src: url("../assets/fonts/Raleway-Variable.ttf") format("truetype");
+      font-weight: 500 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    :root {
+      --shell: #07090c;
+      --side: #0c1015;
+      --content: #07090c;
+      --ink: #10151b;
+      --ink-soft: #e8eef2;
+      --muted: #8b959f;
+      --muted-light: #8b959f;
+      --line-dark: rgba(232,238,242,0.1);
+      --line: #d5dbe3;
+      --accent: #00e8ef;
+      --heading: "Raleway", sans-serif; /* LOCKED — Cyrillic headings */
+      --brand: "Arista Pro SemiBold", sans-serif;
+      --body: "IBM Plex Sans", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #07090c; }
+    body {
+      font-family: var(--body);
+      background: var(--shell);
+      color: var(--ink-soft);
+      min-height: 100svh;
+      min-height: 100dvh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; padding: 0; }
+
+    .shell-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1.5rem;
+      background: var(--shell); border-bottom: 1px solid var(--line-dark);
+      color: var(--ink-soft);
+      overflow: visible;
+    }
+    .logo {
+      position: relative;
+      display: inline-flex;
+      align-items: baseline;
+      overflow: visible;
+      z-index: 2;
+      font-family: var(--brand);
+      font-weight: 600;
+      font-size: clamp(1.65rem, 3.5vw, 2.1rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink-soft);
+      text-shadow: 0 0 18px rgba(0, 232, 239, 0.22);
+    }
+    .logo span { color: var(--accent); }
+    .logo:hover,
+    .logo:focus-visible {
+      text-shadow:
+        0 0 10px rgba(0, 232, 239, 0.45),
+        0 0 28px rgba(0, 232, 239, 0.28);
+    }
+    .crumb { color: var(--muted); font-size: 0.85rem; }
+    .crumb b { color: var(--ink-soft); font-weight: 500; }
+    .fav {
+      color: var(--muted); font-size: 0.85rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .fav:hover { color: var(--accent); }
+    .fav svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 73px);
+      min-height: calc(100svh - 73px);
+      min-height: calc(100dvh - 73px);
+    }
+    aside {
+      background: var(--side);
+      border-right: 1px solid var(--line-dark);
+      padding: 1.5rem 1.2rem;
+      color: var(--ink-soft);
+    }
+    aside h2 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.85rem;
+    }
+    .filt { display: grid; gap: 0.25rem; margin-bottom: 1.6rem; }
+    .filt label {
+      display: flex; align-items: center; gap: 0.55rem;
+      font-size: 0.9rem; color: var(--muted); cursor: pointer; padding: 0.35rem 0;
+    }
+    .filt label:hover, .filt label.active { color: var(--ink-soft); }
+    .filt input { accent-color: var(--accent); }
+    .side-note { font-size: 0.82rem; color: var(--muted); }
+
+    main {
+      background: var(--content);
+      padding: 1.5rem;
+      display: flex; flex-direction: column;
+      min-height: calc(100vh - 73px);
+      min-height: calc(100svh - 73px);
+      min-height: calc(100dvh - 73px);
+    }
+    .toolbar {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 1.25rem; gap: 1rem; flex-wrap: wrap;
+    }
+    .toolbar h1 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: clamp(1.55rem, 3vw, 2.1rem);
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+    .toolbar p { color: var(--muted); font-size: 0.9rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+    }
+    .item {
+      position: relative;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      display: flex; flex-direction: column;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .item:hover { border-color: #7adce0; transform: translateY(-2px); }
+    .fav-btn {
+      position: absolute; top: 0.55rem; right: 0.55rem; z-index: 1;
+      width: 32px; height: 32px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--line);
+      color: var(--muted-light);
+    }
+    .fav-btn:hover, .fav-btn.on { color: #0a8f96; border-color: #7adce0; }
+    .fav-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+    .fav-btn.on svg { fill: currentColor; }
+    .thumb {
+      aspect-ratio: 4/3;
+      background:
+        linear-gradient(160deg, rgba(0,232,239,0.12), transparent 55%),
+        #e6ebf0;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+    }
+    .thumb::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 16%;
+      width: 18px; height: 62%;
+      transform: translateX(-50%);
+      border-radius: 12px 12px 3px 3px;
+      background: linear-gradient(180deg, #00e8ef, #1a4a55 75%, #c45c2a);
+    }
+    .body { padding: 0.9rem 1rem 1.1rem; display: grid; gap: 0.3rem; }
+    .sku { font-size: 0.7rem; letter-spacing: 0.1em; color: #0a8f96; text-transform: uppercase; }
+    .name { font-weight: 600; font-size: 0.98rem; }
+    .meta { color: var(--muted-light); font-size: 0.82rem; }
+    .price { font-weight: 600; margin-top: 0.3rem; }
+    .look {
+      margin-top: 0.55rem;
+      font-size: 0.82rem; font-weight: 500; color: #0a8f96;
+    }
+
+    .page-foot {
+      margin-top: auto;
+      padding-top: 2rem;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
+      color: var(--muted); font-size: 0.82rem;
+    }
+    .page-foot a { color: var(--muted); }
+    .page-foot a:hover { color: var(--accent); }
+
+    @media (max-width: 800px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { border-right: none; border-bottom: 1px solid var(--line-dark); }
+      .filt { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-header">
+    <a class="logo" href="../homepage-forge/index.html" aria-label="laprinta">la<span>printa</span></a>
+    <div class="crumb">Каталог / <b>Поплавки</b></div>
+    <a class="fav" href="#" aria-label="Избранное">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      Избранное
+    </a>
+  </header>
+  <div class="layout">
+    <aside>
+      <h2>Тип</h2>
+      <div class="filt">
+        <label class="active"><input type="checkbox" checked /> Скользящие</label>
+        <label><input type="checkbox" checked /> Матчевые</label>
+        <label><input type="checkbox" /> Для дальнего заброса</label>
+        <label><input type="checkbox" /> Зимние</label>
+      </div>
+      <h2>Грузоподъёмность</h2>
+      <div class="filt">
+        <label><input type="checkbox" checked /> 1–3 г</label>
+        <label><input type="checkbox" checked /> 3–6 г</label>
+        <label><input type="checkbox" /> 6–12 г</label>
+      </div>
+      <h2>Каталог</h2>
+      <p class="side-note">18 моделей · готовые изделия</p>
+    </aside>
+    <main>
+      <div class="toolbar">
+        <div>
+          <h1>Поплавки</h1>
+          <p>18 моделей · готовые изделия</p>
+        </div>
+        <p>Сортировка: по грузоподъёмности</p>
+      </div>
+      <div class="grid">
+        <article class="item">
+          <button class="fav-btn" type="button" aria-label="В избранное" title="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1042</span>
+              <span class="name">Поплавок «Лагуна» 3 г</span>
+              <span class="meta">Скользящий · бальса</span>
+              <span class="price">490 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+        <article class="item">
+          <button class="fav-btn" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1108</span>
+              <span class="name">Поплавок «Стрела» 4 г</span>
+              <span class="meta">Матчевый · композит</span>
+              <span class="price">560 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+        <article class="item">
+          <button class="fav-btn" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1215</span>
+              <span class="name">Поплавок «Орион» 6 г</span>
+              <span class="meta">Дальний заброс</span>
+              <span class="price">620 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+        <article class="item">
+          <button class="fav-btn on" type="button" aria-label="В избранном" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1301</span>
+              <span class="name">Поплавок «Нева» 2 г</span>
+              <span class="meta">Скользящий · тонкая антенна</span>
+              <span class="price">420 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+        <article class="item">
+          <button class="fav-btn" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1402</span>
+              <span class="name">Поплавок «Полюс» 1,5 г</span>
+              <span class="meta">Зимний · компакт</span>
+              <span class="price">310 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+        <article class="item">
+          <button class="fav-btn" type="button" aria-label="В избранное">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+          </button>
+          <a href="../product-stack/index.html">
+            <div class="thumb" aria-hidden="true"></div>
+            <div class="body">
+              <span class="sku">ПФ-1510</span>
+              <span class="name">Поплавок «Волга» 8 г</span>
+              <span class="meta">Матчевый · крупный</span>
+              <span class="price">740 ₽</span>
+              <span class="look">Смотреть модель →</span>
+            </div>
+          </a>
+        </article>
+      </div>
+      <div class="page-foot">
+        <span>Каталог laprinta</span>
+        <a href="#">Связаться</a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

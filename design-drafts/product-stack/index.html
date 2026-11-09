@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Поплавок «Лагуна» 3 г — Stack · laprinta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Raleway:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    @font-face {
+      font-family: "Arista Pro SemiBold";
+      src:
+        local("Arista Pro SemiBold"),
+        local("AristaPro-SemiBold"),
+        url("../assets/fonts/AristaPro-SemiBold.ttf") format("truetype");
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Raleway";
+      src: url("../assets/fonts/Raleway-Variable.ttf") format("truetype");
+      font-weight: 500 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    :root {
+      --shell: #07090c;
+      --side: #0c1015;
+      --content: #07090c;
+      --ink: #0b1220;
+      --ink-soft: #e8eef2;
+      --muted: #8b959f;
+      --muted-light: #5a6578;
+      --line-dark: rgba(232,238,242,0.1);
+      --line: #d5dae3;
+      --accent: #00e8ef;
+      --heading: "Raleway", sans-serif; /* LOCKED — Cyrillic headings */
+      --brand: "Arista Pro SemiBold", sans-serif;
+      --body: "Source Sans 3", sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #07090c; }
+    body {
+      font-family: var(--body);
+      color: var(--ink-soft);
+      background: var(--shell);
+      min-height: 100svh;
+      min-height: 100dvh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; background: none; border: none; color: inherit; cursor: pointer; }
+
+    .shell-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.75rem clamp(1.25rem, 3vw, 2rem);
+      background: var(--shell); border-bottom: 1px solid var(--line-dark);
+      color: var(--ink-soft);
+      position: sticky; top: 0; z-index: 5;
+      overflow: visible;
+    }
+    .logo {
+      position: relative;
+      display: inline-flex;
+      align-items: baseline;
+      overflow: visible;
+      z-index: 2;
+      font-family: var(--brand);
+      font-weight: 600;
+      font-size: clamp(1.65rem, 3.5vw, 2.1rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--ink-soft);
+      text-shadow: 0 0 18px rgba(0, 232, 239, 0.22);
+    }
+    .logo span { color: var(--accent); }
+    .logo:hover,
+    .logo:focus-visible {
+      text-shadow:
+        0 0 10px rgba(0, 232, 239, 0.45),
+        0 0 28px rgba(0, 232, 239, 0.28);
+    }
+    .hdr-meta { color: var(--muted); font-size: 0.9rem; }
+    .fav {
+      color: var(--muted); font-size: 0.85rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .fav:hover { color: var(--accent); }
+    .fav svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+
+    .frame {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: calc(100vh - 73px);
+      min-height: calc(100svh - 73px);
+      min-height: calc(100dvh - 73px);
+    }
+    .shell-side {
+      background: var(--side);
+      border-right: 1px solid var(--line-dark);
+      padding: 1.35rem 1rem;
+      color: var(--ink-soft);
+    }
+    .shell-side a {
+      display: block; padding: 0.4rem 0; color: var(--muted); font-size: 0.9rem;
+    }
+    .shell-side a.on, .shell-side a:hover { color: var(--accent); }
+    .shell-side h2 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.75rem;
+    }
+
+    .main { background: var(--content); display: flex; flex-direction: column; color: var(--ink-soft); }
+    .hero-shot {
+      min-height: 48vh;
+      position: relative;
+      background:
+        linear-gradient(180deg, transparent 45%, rgba(7,9,12,0.7) 100%),
+        radial-gradient(circle at 58% 40%, #1a3a44, #0b1220 60%);
+      display: grid; align-items: end;
+      color: #fff;
+    }
+    .hero-shot::before {
+      content: "";
+      position: absolute;
+      left: 50%; top: 12%;
+      width: min(28vw, 72px); height: 68%;
+      transform: translateX(-50%) rotate(8deg);
+      border-radius: 40px 40px 8px 8px;
+      background: linear-gradient(180deg, #00e8ef, rgba(0,232,239,0.15) 75%);
+      box-shadow: 0 0 40px rgba(0,232,239,0.3);
+    }
+    .hero-copy {
+      position: relative; z-index: 1;
+      padding: 1.75rem clamp(1.25rem, 3vw, 2.25rem) 2rem;
+      max-width: 40rem;
+    }
+    .sku { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8deff3; margin-bottom: 0.45rem; }
+    .hero-copy h1 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: clamp(2rem, 4.5vw, 3.2rem);
+      letter-spacing: -0.02em; line-height: 1.05;
+      color: var(--accent);
+    }
+
+    .content {
+      width: min(960px, calc(100% - 2rem));
+      margin: -2rem auto 1.5rem;
+      position: relative; z-index: 2;
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: clamp(1.35rem, 3vw, 2rem);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 1.75rem;
+    }
+    .content p { color: var(--muted-light); margin-bottom: 0.9rem; }
+    .price-block h2 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+    .price-block .note { color: var(--muted-light); font-size: 0.9rem; margin: 0.3rem 0 1rem; }
+    .cta {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: var(--accent); color: #041214;
+      padding: 0.85rem 1.2rem; font-weight: 600;
+    }
+    .cta:hover { filter: brightness(1.05); }
+    .cta svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+    .cta-ghost {
+      display: inline-block; margin-left: 0.65rem;
+      border-bottom: 1px solid var(--line); color: var(--muted-light); padding-bottom: 0.1rem;
+    }
+    .cta-ghost:hover { color: var(--ink); }
+    .spec-table { width: 100%; border-collapse: collapse; margin-top: 0.4rem; }
+    .spec-table th, .spec-table td {
+      text-align: left; padding: 0.7rem 0;
+      border-bottom: 1px solid var(--line); font-weight: 500;
+    }
+    .spec-table th { color: var(--muted-light); width: 42%; }
+
+    .related {
+      width: min(960px, calc(100% - 2rem));
+      margin: 0 auto 2rem;
+    }
+    .related h2 {
+      font-family: var(--heading);
+      font-weight: 600;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.85rem;
+      color: var(--accent);
+    }
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+    .related a {
+      background: #fff;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 0.85rem 1rem;
+      transition: border-color 0.2s;
+    }
+    .related a:hover { border-color: #7adce0; }
+    .related .sku { color: #0a8f96; margin-bottom: 0.25rem; }
+    .related .name { font-weight: 600; font-size: 0.95rem; }
+    .related .meta { color: var(--muted-light); font-size: 0.82rem; margin-top: 0.2rem; }
+
+    .page-foot {
+      margin-top: auto;
+      padding: 1rem clamp(1.25rem, 3vw, 2rem) 1.5rem;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;
+      color: var(--muted); font-size: 0.82rem;
+      border-top: 1px solid var(--line-dark);
+      background: var(--content);
+    }
+    .page-foot a { color: var(--muted); }
+    .page-foot a:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .frame { grid-template-columns: 1fr; }
+      .shell-side { display: none; }
+      .content { grid-template-columns: 1fr; margin-top: -1.25rem; }
+      .related-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="shell-header">
+    <a class="logo" href="../homepage-forge/index.html" aria-label="laprinta">la<span>printa</span></a>
+    <span class="hdr-meta">карточка изделия</span>
+    <a class="fav" href="#" aria-label="Избранное">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+      Избранное
+    </a>
+  </header>
+
+  <div class="frame">
+    <aside class="shell-side" aria-label="Навигация">
+      <h2>Каталог</h2>
+      <a href="../catalog-rail/index.html">Все поплавки</a>
+      <a href="../catalog-rail/index.html">Скользящие</a>
+      <a class="on" href="#">«Лагуна» 3 г</a>
+      <a href="../catalog-rail/index.html">Матчевые</a>
+      <a href="../catalog-rail/index.html">Зимние</a>
+    </aside>
+
+    <div class="main">
+      <section class="hero-shot" aria-label="Визуал изделия">
+        <div class="hero-copy">
+          <div class="sku">ПФ-1042</div>
+          <h1>Поплавок «Лагуна» 3 г</h1>
+        </div>
+      </section>
+
+      <section class="content">
+        <div>
+          <p>Скользящий поплавок для проводки на течении и стоячей воде. Серия «Лагуна» — готовое изделие каталога laprinta.</p>
+          <table class="spec-table">
+            <tr><th>Тип</th><td>Скользящий</td></tr>
+            <tr><th>Грузоподъёмность</th><td>3 г</td></tr>
+            <tr><th>Корпус</th><td>Бальса, лак</td></tr>
+            <tr><th>Антенна</th><td>Яркая, сменная</td></tr>
+            <tr><th>Серия</th><td>«Лагуна»</td></tr>
+          </table>
+        </div>
+        <div class="price-block">
+          <h2>490 ₽</h2>
+          <p class="note">цена за шт · ориентир для каталога</p>
+          <button class="cta" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+            В избранное
+          </button>
+          <a class="cta-ghost" href="../catalog-rail/index.html">К каталогу</a>
+        </div>
+      </section>
+
+      <section class="related" aria-label="Похожие модели">
+        <h2>Смотреть ещё</h2>
+        <div class="related-grid">
+          <a href="#">
+            <div class="sku">ПФ-1301</div>
+            <div class="name">«Нева» 2 г</div>
+            <div class="meta">Скользящий</div>
+          </a>
+          <a href="#">
+            <div class="sku">ПФ-1108</div>
+            <div class="name">«Стрела» 4 г</div>
+            <div class="meta">Матчевый</div>
+          </a>
+          <a href="#">
+            <div class="sku">ПФ-1215</div>
+            <div class="name">«Орион» 6 г</div>
+            <div class="meta">Дальний заброс</div>
+          </a>
+        </div>
+      </section>
+
+      <div class="page-foot">
+        <span>© 2026 laprinta</span>
+        <a href="#">Связаться</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
