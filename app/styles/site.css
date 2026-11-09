@@ -1013,6 +1013,18 @@
   --progress-bar-color: var(--c-accent);
   background: transparent;
 }
+.gallery__watermark {
+  position: absolute;
+  top: var(--sp-3);
+  left: var(--sp-4);
+  z-index: 1;
+  opacity: 0.38;
+  pointer-events: none;
+  user-select: none;
+}
+.gallery__watermark .wordmark {
+  font-size: 1.35rem;
+}
 .gallery__hint {
   position: absolute;
   left: 50%;
@@ -1960,6 +1972,13 @@
   }
   .gallery__stage {
     aspect-ratio: 1 / 1;
+  }
+  .gallery__watermark {
+    top: var(--sp-2);
+    left: var(--sp-3);
+  }
+  .gallery__watermark .wordmark {
+    font-size: 1.1rem;
   }
   .gallery__nav {
     opacity: 1;

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { Wordmark } from "@/components/site/Wordmark";
 
 export type GalleryItem = {
   id: string;
@@ -35,8 +36,26 @@ function ModelStage({ item }: { item: GalleryItem }) {
     const el = ref.current;
     if (!el) return;
     const onError = () => setFailed(true);
+    let detachGrid = () => {};
+    let alive = true;
+    const onLoad = () => {
+      import("@/lib/model-grid")
+        .then(({ attachFloorGrid }) => {
+          if (!alive) return;
+          detachGrid();
+          detachGrid = attachFloorGrid(el);
+        })
+        .catch(() => {});
+    };
     el.addEventListener("error", onError);
-    return () => el.removeEventListener("error", onError);
+    el.addEventListener("load", onLoad);
+    if ((el as HTMLElement & { loaded?: boolean }).loaded) onLoad();
+    return () => {
+      alive = false;
+      el.removeEventListener("error", onError);
+      el.removeEventListener("load", onLoad);
+      detachGrid();
+    };
   }, [ready]);
 
   if (failed) {
@@ -75,6 +94,9 @@ function ModelStage({ item }: { item: GalleryItem }) {
           Загружаем 3D-модель…
         </div>
       )}
+      <span className="gallery__watermark" aria-hidden="true">
+        <Wordmark href={null} />
+      </span>
       <p className="gallery__hint">
         <Icon name="cube" size={14} />
         Вращайте модель мышью или пальцем, масштаб — колесом или щипком
