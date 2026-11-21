@@ -1,7 +1,15 @@
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
   devIndicators: false,
+  // Строгий корень проекта: в домашней папке лежит чужой package-lock.json,
+  // из-за которого Next неверно угадывает workspace root.
+  outputFileTracingRoot: projectRoot,
   // pdfkit reads its AFM data files from disk at runtime.
   serverExternalPackages: ["pdfkit"],
   images: {
