@@ -1,13 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { site } from "@/lib/site";
 import "./styles/tokens.css";
 import "./styles/base.css";
 
-const plex = IBM_Plex_Sans({
-  subsets: ["latin", "cyrillic"],
-  weight: ["400", "500", "600"],
+// Файлы IBM Plex Sans (400/500/600) лежат в репозитории: сборка не должна
+// зависеть от доступа к Google Fonts, который из России нестабилен.
+const plex = localFont({
+  src: [
+    { path: "./fonts/plex-400.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/plex-500.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/plex-600.ttf", weight: "600", style: "normal" },
+  ],
   variable: "--font-plex",
   display: "swap",
 });
