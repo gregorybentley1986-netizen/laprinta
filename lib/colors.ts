@@ -1,12 +1,14 @@
 /**
  * Product colour helpers shared by the site, the admin and the JSON store.
  *
- * A colour is `{ name, hex }` where `hex` is `#rrggbb` or two hex values
- * separated by a comma (`#d42b2b,#ffffff`) for two-tone products such as
- * «красно-белый». Everything here is pure, so client components can use it.
+ * One product carries at most three colours (`MAX_COLORS`), each `{ name, hex }`
+ * with a single `#rrggbb` value. The product's icon is a pie split into equal
+ * sectors: 1 colour = solid circle, 2 = halves, 3 = 120° each. Helpers here are
+ * pure, so both server and client components can use them.
  */
 
-export type HexPair = string;
+/** Colours an item can be made in — the pie is divided into that many sectors. */
+export const MAX_COLORS = 3;
 
 const HEX_RE = /^#?([0-9a-f]{6}|[0-9a-f]{3})$/i;
 
@@ -19,23 +21,29 @@ export function toHex(value: string): string | null {
   return `#${full}`;
 }
 
-/** Splits `"#aabbcc,#ffffff"` into at most two validated hex values. */
+/** Splits `"#aabbcc,#ffffff"` into validated hex values (at most `MAX_COLORS`). */
 export function parseHexList(value: string): string[] {
   if (!value) return [];
-  return (value.split(",").map(toHex).filter(Boolean) as string[]).slice(0, 2);
+  return (value.split(",").map(toHex).filter(Boolean) as string[]).slice(0, MAX_COLORS);
 }
 
-/** Canonical storage form: `#rrggbb` or `#rrggbb,#rrggbb`; falls back when unparsable. */
+/** Canonical storage form: `#rrggbb` or `#rrggbb,#rrggbb,#rrggbb`; falls back when unparsable. */
 export function normalizeHex(value: string, fallback = "#8b959f"): string {
   const list = parseHexList(value);
   return list.length ? list.join(",") : fallback;
 }
 
-export function swatchBackground(hex: string): string {
-  const list = parseHexList(hex);
-  if (!list.length) return "var(--c-ink-line)";
-  if (list.length === 1) return list[0];
-  return `linear-gradient(135deg, ${list[0]} 0 50%, ${list[1]} 50% 100%)`;
+/** Sector outline for the pie at `radius`, from `from`° to `to`° (0° = 12 o'clock, clockwise). */
+export function sectorPath(radius: number, from: number, to: number, cx = 16, cy = 16): string {
+  const at = (deg: number) => {
+    const rad = ((deg - 90) * Math.PI) / 180;
+    return [cx + radius * Math.cos(rad), cy + radius * Math.sin(rad)] as const;
+  };
+  const [x0, y0] = at(from);
+  const [x1, y1] = at(to);
+  const large = to - from > 180 ? 1 : 0;
+  const n = (v: number) => v.toFixed(3);
+  return `M${cx} ${cy} L${n(x0)} ${n(y0)} A${radius} ${radius} 0 ${large} 1 ${n(x1)} ${n(y1)} Z`;
 }
 
 export function rgbOf(hex: string): [number, number, number] | null {

@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CardProduct } from "@/lib/cards";
 import { Icon } from "@/components/ui/Icon";
-import { swatchBackground } from "@/lib/colors";
 import { CartButton } from "./CartButton";
 import { FavButton } from "./FavButton";
 
@@ -54,14 +53,6 @@ export function ProductCard({ product, priority = false }: { product: CardProduc
           </Link>
         </h3>
         <p className="pcard__meta">{product.meta}</p>
-        {product.colors.length > 0 && (
-          <div className="pcard__colors" aria-label={`Цвета: ${product.colors.map((c) => c.name).join(", ")}`}>
-            {product.colors.slice(0, 6).map((c, i) => (
-              <span key={`${c.hex}-${i}`} className="pcard__color" style={{ background: swatchBackground(c.hex) }} title={c.name} />
-            ))}
-            {product.colors.length > 6 && <span className="pcard__color-more">+{product.colors.length - 6}</span>}
-          </div>
-        )}
         <div className="pcard__foot">
           <span className="pcard__price">{product.price}</span>
           <CartButton id={product.id} name={product.name} />

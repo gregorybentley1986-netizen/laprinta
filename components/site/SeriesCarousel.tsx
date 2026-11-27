@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { ColorPie } from "@/components/ui/ColorPie";
 import type { CardProduct } from "@/lib/cards";
 
 type Props = {
@@ -92,7 +93,12 @@ export function SeriesCarousel({ name, items, currentId }: Props) {
                 </span>
                 <span className="series-card__body">
                   <span className="series-card__name">{it.name}</span>
-                  <span className="series-card__meta">{it.sku}</span>
+                  <span className="series-card__meta">
+                    {it.colors.length > 0 && (
+                      <ColorPie hex={it.colors.map((c) => c.hex).join(",")} size={13} title={it.colors.map((c) => c.name).join(", ")} />
+                    )}
+                    {it.sku}
+                  </span>
                   <span className="series-card__price">{it.price}</span>
                 </span>
                 {current && <span className="series-card__current">Этот товар</span>}

@@ -1475,6 +1475,28 @@ a.prow__name:hover {
   font-size: var(--fs-xs);
   color: var(--c-ink-muted);
 }
+.ceditor__icon {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px dashed var(--c-ink-line);
+}
+.ceditor__icon-empty {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px dashed var(--c-ink-line);
+  flex: none;
+}
+.ceditor__icon-title {
+  font-size: var(--fs-sm);
+  color: var(--c-ink);
+}
+.ceditor__icon-hint {
+  font-size: var(--fs-xs);
+  color: var(--c-ink-muted);
+}
 .ceditor__list {
   display: grid;
   gap: var(--sp-2);
@@ -1493,10 +1515,14 @@ a.prow__name:hover {
   border-radius: var(--r-xs);
 }
 .ceditor__preview {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--r-xs);
-  border: 1px solid rgba(16, 21, 27, 0.18);
+  width: 2.5rem;
+  height: 2.5rem;
+  justify-self: center;
+  border-radius: 50%;
+}
+.ceditor__preset:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 .ceditor__body {
   display: grid;

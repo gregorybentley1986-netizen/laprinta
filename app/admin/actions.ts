@@ -8,7 +8,7 @@ import { SESSION_COOKIE, SESSION_TTL_S, checkPassword, createSessionToken } from
 import { mutateDb, newId } from "@/lib/db";
 import { isValidSlug, slugify } from "@/lib/slug";
 import { deleteProductUploads, deleteUpload } from "@/lib/storage";
-import { nameToHex, normalizeHex, parseHexList } from "@/lib/colors";
+import { MAX_COLORS, nameToHex, parseHexList } from "@/lib/colors";
 import type { CatalogSection, Database, Product, ProductColor, ProductStatus, SectionStatus } from "@/lib/types";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string };
@@ -85,17 +85,17 @@ function nextSortOrder(db: Database, sectionId: string) {
   return inSection.length ? Math.max(...inSection.map((p) => p.sortOrder)) + 1 : 0;
 }
 
-/** Keeps colour variants tidy: trimmed name, canonical hex, no duplicates. */
+/** Keeps colour variants tidy: at most three colours, one hex each, no duplicates. */
 function cleanColors(input: ProductColor[] | undefined): ProductColor[] {
   const out: ProductColor[] = [];
   for (const c of Array.isArray(input) ? input : []) {
-    const name = String(c?.name ?? "").trim().slice(0, 60);
-    const hex = normalizeHex(String(c?.hex ?? ""), name ? nameToHex(name) : "#8b959f");
-    if (!name && !parseHexList(hex).length) continue;
+    const name = String(c?.name ?? "").trim().slice(0, 40);
+    const hex = parseHexList(String(c?.hex ?? ""))[0] ?? nameToHex(name);
+    if (!name && !hex) continue;
     const item = { name: name || hex.toUpperCase(), hex };
-    if (out.some((x) => x.name === item.name && x.hex === item.hex)) continue;
+    if (out.some((x) => x.name.toLowerCase() === item.name.toLowerCase() && x.hex === item.hex)) continue;
     out.push(item);
-    if (out.length >= 24) break;
+    if (out.length >= MAX_COLORS) break;
   }
   return out;
 }

@@ -1,7 +1,8 @@
 "use client";
 
+import { ColorPie } from "@/components/ui/ColorPie";
 import { Icon } from "@/components/ui/Icon";
-import { COLOR_PRESETS, isLight, nameToHex, normalizeHex, parseHexList, rgbLabel, swatchBackground } from "@/lib/colors";
+import { COLOR_PRESETS, MAX_COLORS, nameToHex, normalizeHex, parseHexList, rgbLabel } from "@/lib/colors";
 import type { ProductColor } from "@/lib/types";
 
 type Props = { value: ProductColor[]; onChange: (next: ProductColor[]) => void };
@@ -9,26 +10,23 @@ type Props = { value: ProductColor[]; onChange: (next: ProductColor[]) => void }
 const FALLBACK = "#8b959f";
 
 /**
- * Colour variants editor: each row is a name plus a primary picker and an
- * optional second picker (two-tone). Pickers are native `<input type="color">`,
- * i.e. the OS RGB palette; the HEX field stays editable for exact values.
+ * Colours of one item: up to three entries, each a name plus one colour.
+ * The icon on the site is a pie of those colours (2 → halves, 3 → 120° each),
+ * previewed above the rows. Pickers are native `<input type="color">`, i.e. the
+ * OS RGB palette; the HEX field stays editable for exact values.
  */
 export function ColorEditor({ value, onChange }: Props) {
+  const full = value.length >= MAX_COLORS;
   const patch = (i: number, next: Partial<ProductColor>) => onChange(value.map((c, j) => (j === i ? { ...c, ...next } : c)));
   const remove = (i: number) => onChange(value.filter((_, j) => j !== i));
 
-  const setPrimary = (i: number, hex: string) => {
-    const second = parseHexList(value[i].hex)[1];
-    patch(i, { hex: second ? `${hex},${second}` : hex });
-  };
-
-  const toggleSecond = (i: number) => {
-    const [first, second] = parseHexList(value[i].hex);
-    if (!first) return;
-    patch(i, { hex: second ? first : `${first},#ffffff` });
-  };
+  const pieHex = value
+    .map((c) => parseHexList(c.hex)[0] ?? nameToHex(c.name))
+    .filter(Boolean)
+    .join(",");
 
   const add = (color: ProductColor) => {
+    if (full) return;
     const name = color.name.trim() || color.hex.toUpperCase();
     if (value.some((c) => c.name.toLowerCase() === name.toLowerCase() && c.hex === color.hex)) return;
     onChange([...value, { name, hex: normalizeHex(color.hex, FALLBACK) }]);
@@ -42,20 +40,32 @@ export function ColorEditor({ value, onChange }: Props) {
         ))}
       </datalist>
 
-      {value.length === 0 && <p className="ceditor__empty">Цвета не заданы — на карточке блок расцветок скрыт.</p>}
+      <div className="ceditor__icon">
+        {pieHex ? (
+          <ColorPie hex={pieHex} size={44} title={value.map((c) => c.name).join(", ")} />
+        ) : (
+          <span className="ceditor__icon-empty" aria-hidden="true" />
+        )}
+        <div>
+          <p className="ceditor__icon-title">
+            {value.length === 0
+              ? "Цвета не заданы — иконка на карточке скрыта"
+              : `Иконка на сайте: ${Math.min(value.length, MAX_COLORS) === 1 ? "сплошной круг" : Math.min(value.length, MAX_COLORS) === 2 ? "две половины" : "три сектора по 120°"}`}
+          </p>
+          <p className="ceditor__icon-hint">
+            {value.length > MAX_COLORS
+              ? `Цветов ${value.length} — в иконку попадут первые ${MAX_COLORS}, сохраните не больше ${MAX_COLORS}`
+              : `Не более ${MAX_COLORS} цветов в изделии.`}
+          </p>
+        </div>
+      </div>
 
       <ul className="ceditor__list" role="list">
         {value.map((c, i) => {
-          const [first, second] = parseHexList(c.hex);
-          const primary = first ?? FALLBACK;
+          const hex = parseHexList(c.hex)[0] ?? nameToHex(c.name);
           return (
             <li key={i} className="ceditor__row">
-              <span
-                className="ceditor__preview"
-                style={{ background: swatchBackground(c.hex) }}
-                data-light={isLight(primary) ? "1" : "0"}
-                aria-hidden="true"
-              />
+              <ColorPie hex={hex} size={40} className="ceditor__preview" />
               <div className="ceditor__body">
                 <div className="ceditor__line">
                   <input
@@ -80,32 +90,11 @@ export function ColorEditor({ value, onChange }: Props) {
                   </button>
                 </div>
                 <div className="ceditor__line ceditor__pickers">
-                  <label className="ceditor__pick" title="Основной цвет — откройте палитру">
-                    <input type="color" value={primary} onChange={(e) => setPrimary(i, e.target.value)} aria-label={`Палитра: основной цвет ${i + 1}`} />
-                    <span>Основной</span>
+                  <label className="ceditor__pick" title="Открыть палитру RGB">
+                    <input type="color" value={hex} onChange={(e) => patch(i, { hex: e.target.value })} aria-label={`Палитра: цвет ${i + 1}`} />
+                    <span>Палитра</span>
                   </label>
-                  {second ? (
-                    <>
-                      <label className="ceditor__pick" title="Второй цвет">
-                        <input
-                          type="color"
-                          value={second}
-                          aria-label={`Палитра: второй цвет ${i + 1}`}
-                          onChange={(e) => patch(i, { hex: `${first ?? FALLBACK},${e.target.value}` })}
-                        />
-                        <span>Второй</span>
-                      </label>
-                      <button type="button" className="ceditor__ghost-btn" onClick={() => toggleSecond(i)}>
-                        Убрать второй
-                      </button>
-                    </>
-                  ) : (
-                    <button type="button" className="ceditor__ghost-btn" onClick={() => toggleSecond(i)}>
-                      <Icon name="plus" size={14} />
-                      Второй цвет (градиент)
-                    </button>
-                  )}
-                  <span className="ceditor__rgb">{rgbLabel(c.hex)}</span>
+                  <span className="ceditor__rgb">{rgbLabel(hex)}</span>
                 </div>
               </div>
             </li>
@@ -114,7 +103,7 @@ export function ColorEditor({ value, onChange }: Props) {
       </ul>
 
       <div className="ceditor__footer">
-        <p className="ceditor__presets-label">Быстрый выбор цвета</p>
+        <p className="ceditor__presets-label">{full ? `Достигнут максимум — ${MAX_COLORS} цвета` : "Быстрый выбор цвета"}</p>
         <div className="ceditor__presets">
           {COLOR_PRESETS.map((p) => (
             <button
@@ -124,14 +113,14 @@ export function ColorEditor({ value, onChange }: Props) {
               style={{ background: p.hex }}
               title={`${p.name} · ${p.hex}`}
               aria-label={`Добавить цвет «${p.name}»`}
-              data-light={isLight(p.hex) ? "1" : "0"}
+              disabled={full}
               onClick={() => add(p)}
             />
           ))}
         </div>
-        <button type="button" className="abtn abtn--ghost abtn--sm" onClick={() => add({ name: "", hex: FALLBACK })}>
+        <button type="button" className="abtn abtn--ghost abtn--sm" disabled={full} onClick={() => add({ name: "", hex: FALLBACK })}>
           <Icon name="plus" size={16} />
-          Добавить свой цвет
+          Добавить цвет
         </button>
       </div>
     </div>

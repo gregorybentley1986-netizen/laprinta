@@ -6,7 +6,7 @@ import { CartButton } from "@/components/site/CartButton";
 import { FavButton } from "@/components/site/FavButton";
 import { ProductGallery, type GalleryItem } from "@/components/site/ProductGallery";
 import { ProductGrid } from "@/components/site/ProductCard";
-import { ProductColors } from "@/components/site/ProductColors";
+import { ProductColorLinks, type ColorVariant } from "@/components/site/ProductColorLinks";
 import { SeriesCarousel } from "@/components/site/SeriesCarousel";
 import { Icon } from "@/components/ui/Icon";
 import {
@@ -60,6 +60,12 @@ export default async function ProductPage({ params }: Props) {
   const series = product.series.trim();
   const seriesProducts = series ? productsInSeries(db, product) : [];
   const seriesShown = seriesProducts.length > 1;
+  const colorVariants: ColorVariant[] = (seriesShown ? seriesProducts : [product]).map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    colors: p.colors,
+    current: p.id === product.id,
+  }));
   const related = relatedProducts(db, product)
     .filter((p) => !seriesShown || !seriesProducts.some((s) => s.id === p.id))
     .map((p) => toCard(db, p));
@@ -143,7 +149,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="buybox__price">{formatPrice(product.priceRub, product.priceFrom)}</p>
             <p className="buybox__note">Цена за 1 шт. · ориентир для каталога</p>
 
-            {product.colors.length > 0 && <ProductColors colors={product.colors} />}
+            <ProductColorLinks items={colorVariants} />
 
             <div className="buybox__actions">
               <CartButton id={product.id} name={product.name} variant="buybox" />

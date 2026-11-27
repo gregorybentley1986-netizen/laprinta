@@ -895,23 +895,6 @@
   font-size: var(--fs-xs);
   color: var(--c-ink-muted);
 }
-.pcard__colors {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
-  margin-top: var(--sp-1);
-}
-.pcard__color {
-  width: 0.85rem;
-  height: 0.85rem;
-  border-radius: 50%;
-  border: 1px solid rgba(16, 21, 27, 0.22);
-}
-.pcard__color-more {
-  font-size: var(--fs-2xs);
-  color: var(--c-ink-muted);
-}
 .pcard__foot {
   display: flex;
   align-items: center;
@@ -1225,44 +1208,37 @@
   color: var(--c-ink-muted);
   margin-bottom: var(--sp-2);
 }
-/* Colour picker in the buybox: RGB swatches with the active name */
-.colors-pick__current {
-  font-weight: 600;
-  color: var(--c-ink);
-}
-.colors-pick__list {
+/* Colour row in the buybox: one pie per variant, siblings are links */
+.color-variants__list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
   list-style: none;
 }
-.swatch-btn {
+.color-variant {
   display: grid;
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  padding: 0;
   border: 1px solid transparent;
   border-radius: var(--r-pill);
-  background: transparent;
-  cursor: pointer;
-  transition: border-color var(--dur-fast) var(--ease);
+  color: var(--c-ink);
+  transition: border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.swatch-btn__dot {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 50%;
-  border: 1px solid rgba(16, 21, 27, 0.22);
-  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+a.color-variant:hover {
+  border-color: var(--c-ink-line);
+  transform: translateY(-1px);
 }
-.swatch-btn:hover .swatch-btn__dot {
-  transform: scale(1.08);
+a.color-variant:focus-visible {
+  outline: 2px solid var(--c-ink-accent);
+  outline-offset: 2px;
 }
-.swatch-btn.is-active {
+.color-variant.is-current {
   border-color: var(--c-ink);
 }
-.swatch-btn.is-active .swatch-btn__dot {
-  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 3px var(--c-ink);
+.color-variant svg {
+  display: block;
+  flex: none;
 }
 .buybox__actions {
   display: grid;
@@ -1497,10 +1473,16 @@
   min-height: 2.6em;
 }
 .series-card__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--c-ink-accent);
+}
+.series-card__meta svg {
+  flex: none;
 }
 .series-card__price {
   margin-top: var(--sp-1);

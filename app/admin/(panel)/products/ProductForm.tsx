@@ -186,7 +186,7 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
             <div className="field ceditor-field">
               <span className="field__label">Расцветки</span>
               <ColorEditor value={colors} onChange={setColors} />
-              <span className="field__hint">Свотч + название + HEX. Кнопка «Второй цвет» даёт двухцветный градиент (например, красно-белый).</span>
+              <span className="field__hint">До трёх цветов в изделии. Иконка на сайте — круг, разделённый на равные сектора; цвета других товаров серии ведут на их страницы.</span>
             </div>
             <div className="specs">
               {v.specs.length > 0 && (
