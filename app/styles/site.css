@@ -895,6 +895,23 @@
   font-size: var(--fs-xs);
   color: var(--c-ink-muted);
 }
+.pcard__colors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--sp-1);
+}
+.pcard__color {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  border: 1px solid rgba(16, 21, 27, 0.22);
+}
+.pcard__color-more {
+  font-size: var(--fs-2xs);
+  color: var(--c-ink-muted);
+}
 .pcard__foot {
   display: flex;
   align-items: center;
@@ -1208,17 +1225,44 @@
   color: var(--c-ink-muted);
   margin-bottom: var(--sp-2);
 }
-.buybox__colors ul {
+/* Colour picker in the buybox: RGB swatches with the active name */
+.colors-pick__current {
+  font-weight: 600;
+  color: var(--c-ink);
+}
+.colors-pick__list {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
   list-style: none;
 }
-.color-chip {
-  padding: 0.3rem 0.65rem;
-  border: 1px solid var(--c-ink-line);
+.swatch-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: var(--r-pill);
-  font-size: var(--fs-xs);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.swatch-btn__dot {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid rgba(16, 21, 27, 0.22);
+  transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.swatch-btn:hover .swatch-btn__dot {
+  transform: scale(1.08);
+}
+.swatch-btn.is-active {
+  border-color: var(--c-ink);
+}
+.swatch-btn.is-active .swatch-btn__dot {
+  box-shadow: 0 0 0 2px var(--c-surface), 0 0 0 3px var(--c-ink);
 }
 .buybox__actions {
   display: grid;
@@ -1312,6 +1356,178 @@
 }
 .product__related {
   margin-top: var(--sp-7);
+}
+
+/* Series carousel — same series products as preview cards (Ozon/WB pattern) */
+.series-block {
+  margin-top: var(--sp-6);
+  padding: var(--sp-5);
+  background: var(--c-bg-raised);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-xs);
+}
+.series-block__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+}
+.series-block__overline {
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-overline);
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+.series-block__title h2 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  color: var(--c-fg);
+}
+.series-block__count {
+  margin-top: var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--c-fg-muted);
+}
+.series-block__nav {
+  display: flex;
+  gap: var(--sp-2);
+  flex: none;
+}
+.series-nav {
+  display: grid;
+  place-items: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-bg-elev);
+  color: var(--c-fg);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.series-nav:hover:not(:disabled) {
+  border-color: var(--c-accent-line);
+  color: var(--c-accent);
+}
+.series-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.series-track {
+  display: flex;
+  gap: var(--sp-3);
+  margin: 0;
+  padding: 0 0 var(--sp-1);
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.series-track::-webkit-scrollbar {
+  display: none;
+}
+.series-card {
+  flex: 0 0 clamp(9.5rem, 24%, 12rem);
+  scroll-snap-align: start;
+}
+.series-card__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  border: 1px solid var(--c-ink-line);
+  border-radius: var(--r-xs);
+  overflow: hidden;
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.series-card__link:hover {
+  transform: translateY(-2px);
+  border-color: var(--c-ink-accent-line);
+}
+.series-card.is-current .series-card__link {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 1px var(--c-accent);
+}
+.series-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: var(--c-surface-sunken);
+  border-bottom: 1px solid var(--c-ink-line);
+}
+.series-card__img {
+  object-fit: contain;
+  padding: var(--sp-2);
+}
+.series-card__placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--c-ink-muted);
+}
+.series-card__flag {
+  position: absolute;
+  top: var(--sp-2);
+  left: var(--sp-2);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--r-xs);
+  background: var(--c-warn);
+  color: #2b1a00;
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+}
+.series-card__body {
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-3);
+}
+.series-card__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  min-height: 2.6em;
+}
+.series-card__meta {
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-ink-accent);
+}
+.series-card__price {
+  margin-top: var(--sp-1);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--fs-md);
+  font-variant-numeric: tabular-nums;
+}
+.series-card__current {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--r-xs);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .series-block {
+    padding: var(--sp-4);
+  }
+  .series-card {
+    flex-basis: clamp(8rem, 42%, 10rem);
+  }
 }
 
 /* 9 — Home (Forge) — hero ported from the approved draft ------------------ */

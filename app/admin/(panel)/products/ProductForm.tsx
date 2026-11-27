@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { slugify } from "@/lib/slug";
-import type { ProductStatus } from "@/lib/types";
+import type { ProductColor, ProductStatus } from "@/lib/types";
 import { deleteProduct, saveProduct, type ProductInput } from "../../actions";
 import { useToast } from "../Toast";
-import type { SectionOption } from "./data";
+import { ColorEditor } from "./ColorEditor";
+import type { SectionOption, SeriesOption } from "./data";
 
 type Props = {
   initial: ProductInput;
   sections: SectionOption[];
+  seriesOptions?: SeriesOption[];
   publicUrl?: string | null;
   media?: React.ReactNode;
 };
@@ -24,14 +26,14 @@ const numOrNull = (v: string) => {
   return Number.isFinite(n) ? n : NaN;
 };
 
-export function ProductForm({ initial, sections, publicUrl, media }: Props) {
+export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, media }: Props) {
   const router = useRouter();
   const toast = useToast();
   const [pending, startTransition] = useTransition();
   const [v, setV] = useState(initial);
   const [price, setPrice] = useState(initial.priceRub?.toString() ?? "");
   const [load, setLoad] = useState(initial.loadGrams?.toString().replace(".", ",") ?? "");
-  const [colors, setColors] = useState(initial.colors.join(", "));
+  const [colors, setColors] = useState<ProductColor[]>(initial.colors);
   const [slugTouched, setSlugTouched] = useState(!!initial.id);
   const [error, setError] = useState<string | null>(null);
   const isNew = !initial.id;
@@ -46,7 +48,7 @@ export function ProductForm({ initial, sections, publicUrl, media }: Props) {
     if (Number.isNaN(priceRub)) return setError("Цена должна быть числом");
     if (Number.isNaN(loadGrams)) return setError("Грузоподъёмность должна быть числом");
     startTransition(async () => {
-      const res = await saveProduct({ ...v, priceRub, loadGrams, colors: colors.split(",") });
+      const res = await saveProduct({ ...v, priceRub, loadGrams, colors });
       if (!res.ok) {
         setError(res.error);
         toast(res.error, "error");
@@ -133,6 +135,26 @@ export function ProductForm({ initial, sections, publicUrl, media }: Props) {
                 <input className="input" value={v.tagline} onChange={(e) => set("tagline", e.target.value)} placeholder="Одна строка под названием" />
               </label>
               <label className="field field--wide">
+                <span className="field__label">Серия</span>
+                <input
+                  className="input"
+                  list="lp-series-list"
+                  value={v.series}
+                  onChange={(e) => set("series", e.target.value)}
+                  placeholder="Например, «Поплавки Щука»"
+                />
+                <datalist id="lp-series-list">
+                  {seriesOptions.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.count > 1 ? `${s.count} товара` : "1 товар"}
+                    </option>
+                  ))}
+                </datalist>
+                <span className="field__hint">
+                  Товары с одинаковым названием серии показываются в карточке вместе — каруселью превью, как на Ozon и WB. Пустое поле — товар вне серии.
+                </span>
+              </label>
+              <label className="field field--wide">
                 <span className="field__label">Описание</span>
                 <textarea className="input" rows={6} value={v.description} onChange={(e) => set("description", e.target.value)} />
                 <span className="field__hint">Пустая строка — новый абзац.</span>
@@ -149,7 +171,7 @@ export function ProductForm({ initial, sections, publicUrl, media }: Props) {
 
           <section className="panel">
             <h2 className="panel__title">Характеристики</h2>
-            <div className="fields fields--3">
+            <div className="fields fields--2">
               <label className="field">
                 <span className="field__label">Грузоподъёмность, г</span>
                 <input className="input" inputMode="decimal" value={load} onChange={(e) => setLoad(e.target.value)} />
@@ -160,10 +182,11 @@ export function ProductForm({ initial, sections, publicUrl, media }: Props) {
                 <input className="input" value={v.material} onChange={(e) => set("material", e.target.value)} placeholder="PETG + ТПУ" />
                 <span className="field__hint">Через «+», для фильтра</span>
               </label>
-              <label className="field">
-                <span className="field__label">Расцветки</span>
-                <input className="input" value={colors} onChange={(e) => setColors(e.target.value)} placeholder="Через запятую" />
-              </label>
+            </div>
+            <div className="field ceditor-field">
+              <span className="field__label">Расцветки</span>
+              <ColorEditor value={colors} onChange={setColors} />
+              <span className="field__hint">Свотч + название + HEX. Кнопка «Второй цвет» даёт двухцветный градиент (например, красно-белый).</span>
             </div>
             <div className="specs">
               {v.specs.length > 0 && (

@@ -138,6 +138,18 @@ export function sortedMedia(p: Product) {
   return [...p.media].sort(bySort);
 }
 
+/** Case/space-insensitive key so «Зима 1» и «зима  1» land in the same series. */
+export function seriesKey(name: string) {
+  return (name ?? "").trim().toLowerCase().replace(/ё/g, "е").replace(/\s+/g, " ");
+}
+
+/** Public products that share the product's series (the product itself included). */
+export function productsInSeries(db: Database, product: Product): Product[] {
+  const key = seriesKey(product.series);
+  if (!key) return [];
+  return listProducts(db, null).filter((p) => seriesKey(p.series) === key);
+}
+
 export function relatedProducts(db: Database, product: Product, limit = 4) {
   const all = listProducts(db, null).filter((p) => p.id !== product.id);
   const section = db.sections.find((s) => s.id === product.sectionId);

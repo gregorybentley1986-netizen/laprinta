@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { DB_FILE } from "./paths";
-import type { Database } from "./types";
+import { nameToHex, normalizeHex } from "./colors";
+import type { Database, Product, ProductColor } from "./types";
 
 // Single-process JSON store. Writes are serialized through a promise queue and
 // committed atomically (tmp file + rename), which is enough for one admin user.
@@ -13,12 +14,39 @@ let queue: Promise<unknown> = Promise.resolve();
 
 const EMPTY: Database = { version: 1, sections: [], products: [], articles: [] };
 
+/**
+ * Brings rows written by older builds up to the current shape:
+ * `colors` used to be plain names, `series` did not exist. Runs on every read,
+ * so the first admin save persists the upgraded form.
+ */
+export function normalizeProduct(p: Product): Product {
+  if (typeof p.series !== "string") p.series = "";
+  const raw = (Array.isArray(p.colors) ? p.colors : []) as unknown[];
+  const colors: ProductColor[] = [];
+  for (const c of raw) {
+    if (typeof c === "string") {
+      const name = c.trim();
+      if (name) colors.push({ name, hex: nameToHex(name) });
+      continue;
+    }
+    if (!c || typeof c !== "object") continue;
+    const obj = c as Partial<ProductColor>;
+    const name = String(obj.name ?? "").trim();
+    const hex = normalizeHex(String(obj.hex ?? ""), nameToHex(name));
+    if (name || hex) colors.push({ name: name || hex, hex });
+  }
+  p.colors = colors;
+  return p;
+}
+
 export async function readDb(): Promise<Database> {
   try {
     const s = await stat(DB_FILE);
     if (cache && cache.mtimeMs === s.mtimeMs) return cache.data;
     const data = JSON.parse(await readFile(DB_FILE, "utf8")) as Database;
     data.articles ??= [];
+    data.products ??= [];
+    data.products.forEach(normalizeProduct);
     cache = { mtimeMs: s.mtimeMs, data };
     return data;
   } catch (err) {

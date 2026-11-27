@@ -3,7 +3,7 @@ import { readDb } from "@/lib/db";
 import { isPublic } from "@/lib/catalog";
 import { ProductForm } from "../ProductForm";
 import { MediaManager } from "../MediaManager";
-import { sectionOptions } from "../data";
+import { sectionOptions, seriesOptions } from "../data";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -22,6 +22,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   return (
     <ProductForm
       sections={sectionOptions(db)}
+      seriesOptions={seriesOptions(db)}
       publicUrl={isPublic(db, p) ? `/product/${p.slug}` : null}
       initial={{
         id: p.id,
@@ -37,6 +38,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         status: p.status,
         loadGrams: p.loadGrams,
         material: p.material,
+        series: p.series,
         colors: p.colors,
         specs: p.specs,
         marketplace: p.marketplace,

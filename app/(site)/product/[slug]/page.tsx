@@ -6,8 +6,20 @@ import { CartButton } from "@/components/site/CartButton";
 import { FavButton } from "@/components/site/FavButton";
 import { ProductGallery, type GalleryItem } from "@/components/site/ProductGallery";
 import { ProductGrid } from "@/components/site/ProductCard";
+import { ProductColors } from "@/components/site/ProductColors";
+import { SeriesCarousel } from "@/components/site/SeriesCarousel";
 import { Icon } from "@/components/ui/Icon";
-import { ancestors, buildTree, coverOf, isPublic, listProducts, relatedProducts, sectionHref, sortedMedia } from "@/lib/catalog";
+import {
+  ancestors,
+  buildTree,
+  coverOf,
+  isPublic,
+  listProducts,
+  productsInSeries,
+  relatedProducts,
+  sectionHref,
+  sortedMedia,
+} from "@/lib/catalog";
 import { toCard } from "@/lib/cards";
 import { readDb } from "@/lib/db";
 import { formatGrams, formatPrice } from "@/lib/format";
@@ -45,7 +57,12 @@ export default async function ProductPage({ params }: Props) {
   const chain = ancestors(db, product.sectionId);
   const section = chain[chain.length - 1];
   const tree = buildTree(db, { publishedOnly: true });
-  const related = relatedProducts(db, product).map((p) => toCard(db, p));
+  const series = product.series.trim();
+  const seriesProducts = series ? productsInSeries(db, product) : [];
+  const seriesShown = seriesProducts.length > 1;
+  const related = relatedProducts(db, product)
+    .filter((p) => !seriesShown || !seriesProducts.some((s) => s.id === p.id))
+    .map((p) => toCard(db, p));
   const items: GalleryItem[] = sortedMedia(product).map((m) => ({
     id: m.id,
     type: m.type,
@@ -66,6 +83,7 @@ export default async function ProductPage({ params }: Props) {
   const keyFacts = [
     product.loadGrams != null && { label: "Грузоподъёмность", value: formatGrams(product.loadGrams) },
     product.material && { label: "Материал", value: product.material },
+    series && { label: "Серия", value: series },
     section && { label: "Раздел", value: section.title },
   ].filter(Boolean) as { label: string; value: string }[];
 
@@ -77,6 +95,7 @@ export default async function ProductPage({ params }: Props) {
     sku: product.sku,
     description: product.tagline,
     brand: { "@type": "Brand", name: "laprinta" },
+    color: product.colors.length ? product.colors.map((c) => c.name).join(", ") : undefined,
     image: cover ? [new URL(cover.url, site.url).toString()] : undefined,
     offers:
       product.priceRub != null
@@ -124,18 +143,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="buybox__price">{formatPrice(product.priceRub, product.priceFrom)}</p>
             <p className="buybox__note">Цена за 1 шт. · ориентир для каталога</p>
 
-            {product.colors.length > 0 && (
-              <div className="buybox__colors">
-                <p className="buybox__label">Расцветки</p>
-                <ul role="list">
-                  {product.colors.map((c) => (
-                    <li key={c} className="color-chip">
-                      {c}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {product.colors.length > 0 && <ProductColors colors={product.colors} />}
 
             <div className="buybox__actions">
               <CartButton id={product.id} name={product.name} variant="buybox" />
@@ -169,6 +177,8 @@ export default async function ProductPage({ params }: Props) {
             </a>
           </aside>
         </div>
+
+        {seriesShown && <SeriesCarousel name={series} items={seriesProducts.map((p) => toCard(db, p))} currentId={product.id} />}
 
         <section className="product__details" aria-label="Описание и характеристики">
           <div className="product__desc">

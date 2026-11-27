@@ -30,6 +30,13 @@ export type ProductMedia = {
 
 export type ProductSpec = { label: string; value: string };
 
+/**
+ * A colour variant of a product. `hex` is `#rrggbb`, or two hex values separated
+ * by a comma for two-tone items («красно-белый»). Older rows stored plain names;
+ * `readDb` upgrades them on load.
+ */
+export type ProductColor = { name: string; hex: string };
+
 export type Product = {
   id: string;
   slug: string;
@@ -39,12 +46,14 @@ export type Product = {
   description: string;
   sectionId: string;
   sortOrder: number;
+  /** Free-form series name; products sharing it are shown together in the card. */
+  series: string;
   priceRub: number | null;
   priceFrom: boolean;
   inStock: boolean;
   loadGrams: number | null;
   material: string;
-  colors: string[];
+  colors: ProductColor[];
   specs: ProductSpec[];
   media: ProductMedia[];
   marketplace: { ozonUrl?: string; wildberriesUrl?: string };

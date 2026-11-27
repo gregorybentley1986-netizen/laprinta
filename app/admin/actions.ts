@@ -8,7 +8,8 @@ import { SESSION_COOKIE, SESSION_TTL_S, checkPassword, createSessionToken } from
 import { mutateDb, newId } from "@/lib/db";
 import { isValidSlug, slugify } from "@/lib/slug";
 import { deleteProductUploads, deleteUpload } from "@/lib/storage";
-import type { CatalogSection, Database, Product, ProductStatus, SectionStatus } from "@/lib/types";
+import { nameToHex, normalizeHex, parseHexList } from "@/lib/colors";
+import type { CatalogSection, Database, Product, ProductColor, ProductStatus, SectionStatus } from "@/lib/types";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -59,7 +60,8 @@ export type ProductInput = {
   status: ProductStatus;
   loadGrams: number | null;
   material: string;
-  colors: string[];
+  series: string;
+  colors: ProductColor[];
   specs: { label: string; value: string }[];
   marketplace: { ozonUrl?: string; wildberriesUrl?: string };
   seo: { title: string; description: string };
@@ -81,6 +83,21 @@ function cleanUrl(v?: string) {
 function nextSortOrder(db: Database, sectionId: string) {
   const inSection = db.products.filter((p) => p.sectionId === sectionId);
   return inSection.length ? Math.max(...inSection.map((p) => p.sortOrder)) + 1 : 0;
+}
+
+/** Keeps colour variants tidy: trimmed name, canonical hex, no duplicates. */
+function cleanColors(input: ProductColor[] | undefined): ProductColor[] {
+  const out: ProductColor[] = [];
+  for (const c of Array.isArray(input) ? input : []) {
+    const name = String(c?.name ?? "").trim().slice(0, 60);
+    const hex = normalizeHex(String(c?.hex ?? ""), name ? nameToHex(name) : "#8b959f");
+    if (!name && !parseHexList(hex).length) continue;
+    const item = { name: name || hex.toUpperCase(), hex };
+    if (out.some((x) => x.name === item.name && x.hex === item.hex)) continue;
+    out.push(item);
+    if (out.length >= 24) break;
+  }
+  return out;
 }
 
 export async function saveProduct(input: ProductInput): Promise<ActionResult<{ id: string }>> {
@@ -108,7 +125,8 @@ export async function saveProduct(input: ProductInput): Promise<ActionResult<{ i
       status: input.status,
       loadGrams: input.loadGrams == null || !Number.isFinite(input.loadGrams) ? null : input.loadGrams,
       material: input.material.trim(),
-      colors: input.colors.map((c) => c.trim()).filter(Boolean),
+      series: (input.series ?? "").trim().replace(/\s+/g, " ").slice(0, 120),
+      colors: cleanColors(input.colors),
       specs: input.specs.map((s) => ({ label: s.label.trim(), value: s.value.trim() })).filter((s) => s.label && s.value),
       marketplace: { ozonUrl: cleanUrl(input.marketplace.ozonUrl), wildberriesUrl: cleanUrl(input.marketplace.wildberriesUrl) },
       seo: { title: input.seo.title.trim(), description: input.seo.description.trim() },

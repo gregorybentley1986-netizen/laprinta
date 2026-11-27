@@ -17,6 +17,7 @@ export type CardProduct = {
   inStock: boolean;
   hasVideo: boolean;
   has3d: boolean;
+  colors: { name: string; hex: string }[];
   cover: { url: string; alt: string; width?: number; height?: number } | null;
 };
 
@@ -36,6 +37,7 @@ export function toCard(db: Database, p: Product): CardProduct {
     inStock: p.inStock,
     hasVideo: p.media.some((m) => m.type === "video"),
     has3d: p.media.some((m) => m.type === "glb"),
+    colors: p.colors.map((c) => ({ name: c.name, hex: c.hex })),
     cover: cover ? { url: cover.url, alt: cover.alt || p.name, width: cover.width, height: cover.height } : null,
   };
 }

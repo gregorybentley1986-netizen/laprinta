@@ -1,6 +1,6 @@
 import { readDb } from "@/lib/db";
 import { ProductForm } from "../ProductForm";
-import { sectionOptions } from "../data";
+import { sectionOptions, seriesOptions } from "../data";
 
 export const metadata = { title: "Новый товар" };
 
@@ -12,6 +12,7 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
   return (
     <ProductForm
       sections={sections}
+      seriesOptions={seriesOptions(db)}
       initial={{
         name: "",
         slug: "",
@@ -25,6 +26,7 @@ export default async function NewProductPage({ searchParams }: { searchParams: P
         status: "draft",
         loadGrams: null,
         material: "",
+        series: "",
         colors: [],
         specs: [{ label: "Тип", value: "" }, { label: "Грузоподъёмность", value: "" }, { label: "Длина", value: "" }, { label: "Корпус", value: "" }],
         marketplace: {},
