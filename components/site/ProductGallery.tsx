@@ -105,6 +105,48 @@ function ModelStage({ item }: { item: GalleryItem }) {
   );
 }
 
+function VideoStage({ item }: { item: GalleryItem }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  // Autoplay must be muted to pass browser policies; `defaultMuted` keeps the
+  // attribute on the DOM node, and the explicit play() covers React setting the
+  // `muted` property a tick after the source is attached.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.defaultMuted = true;
+    el.muted = true;
+    const kick = () => {
+      const played = el.play();
+      if (played && typeof played.catch === "function") played.catch(() => {});
+    };
+    kick();
+    el.addEventListener("loadeddata", kick);
+    el.addEventListener("canplay", kick);
+    return () => {
+      el.removeEventListener("loadeddata", kick);
+      el.removeEventListener("canplay", kick);
+    };
+  }, [item.id]);
+
+  return (
+    <video
+      ref={ref}
+      className="gallery__video"
+      src={item.url}
+      poster={item.posterUrl}
+      controls
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+    >
+      Ваш браузер не поддерживает видео.
+    </video>
+  );
+}
+
 export function ProductGallery({ items, name }: { items: GalleryItem[]; name: string }) {
   const [index, setIndex] = useState(0);
   const touchX = useRef<number | null>(null);
@@ -142,14 +184,10 @@ export function ProductGallery({ items, name }: { items: GalleryItem[]; name: st
         {active.type === "image" && (
           <Image key={active.id} src={active.url} alt={active.alt} fill sizes="(max-width: 900px) 100vw, 720px" priority={index === 0} className="gallery__img" />
         )}
-        {active.type === "video" && (
-          <video key={active.id} className="gallery__video" src={active.url} poster={active.posterUrl} controls playsInline preload="metadata">
-            Ваш браузер не поддерживает видео.
-          </video>
-        )}
+        {active.type === "video" && <VideoStage key={active.id} item={active} />}
         {active.type === "glb" && <ModelStage key={active.id} item={active} />}
 
-        {items.length > 1 && active.type === "image" && (
+        {items.length > 1 && (
           <>
             <button type="button" className="gallery__nav gallery__nav--prev" aria-label="Предыдущее" onClick={() => go(-1)}>
               <Icon name="arrowLeft" size={18} />

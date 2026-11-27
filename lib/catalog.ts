@@ -1,6 +1,6 @@
 import "server-only";
 import { readDb } from "./db";
-import type { CatalogSection, Database, Product, ProductMedia, SectionNode } from "./types";
+import type { CatalogSection, Database, Product, ProductColor, ProductMedia, SectionNode } from "./types";
 
 export const LOAD_BUCKETS = [
   { id: "0-2", label: "до 2 г", min: 0, max: 2 },
@@ -150,47 +150,95 @@ export function productsInSeries(db: Database, product: Product): Product[] {
   return listProducts(db, null).filter((p) => seriesKey(p.series) === key);
 }
 
-export type VariantAttribute = {
-  label: string;
-  options: { value: string; slug: string; current: boolean }[];
+export type VariantChoice = {
+  /** Stable id: sorted colour hexes for colour choices, normalised value for specs. */
+  key: string;
+  /** Rendered as chips. */
+  text?: string;
+  /** Rendered as a pie. */
+  colors?: ProductColor[];
+  current: boolean;
+  /** Product page for this combination, or null when it does not exist. */
+  slug: string | null;
 };
 
+export type VariantRow = {
+  id: string;
+  kind: "color" | "spec";
+  label: string;
+  choices: VariantChoice[];
+};
+
+/** Colour set identity: two products painted the same collapse into one swatch. */
+const colorSignature = (p: Product) =>
+  p.colors
+    .map((c) => c.hex.toLowerCase())
+    .sort()
+    .join("|");
+
+const specValue = (p: Product, label: string) =>
+  p.specs.find((s) => s.label.trim().toLowerCase() === label.toLowerCase())?.value.trim() ?? "";
+
 /**
- * Specs flagged `variant` turn into selectors on the card: every product of the
- * same series that carries the same attribute becomes an option, so a series can
- * differ by load capacity while the colour stays the same.
+ * Variant matrix for the buybox: colours (deduplicated across the series) and
+ * every spec flagged `variant`. A combination is available only if a product
+ * exists with the current colour *and* the current values of the other flagged
+ * specs; otherwise the option is shown dimmed and cannot be clicked.
  */
-export function variantAttributes(db: Database, product: Product): VariantAttribute[] {
-  const flagged = product.specs.filter((s) => s.variant && s.value.trim());
-  if (!flagged.length) return [];
+export function variantRows(db: Database, product: Product): VariantRow[] {
   const members = productsInSeries(db, product);
   if (members.length < 2) return [];
 
-  const out: VariantAttribute[] = [];
-  const seen = new Set<string>();
-  for (const spec of flagged) {
-    const label = spec.label.trim();
-    const key = label.toLowerCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    const options: VariantAttribute["options"] = [];
-    for (const m of members) {
-      const value = m.specs.find((s) => s.label.trim().toLowerCase() === key)?.value.trim();
-      if (!value) continue;
-      const isCurrent = m.id === product.id;
-      const existing = options.find((o) => o.value.toLowerCase() === value.toLowerCase());
-      // Same value on several members: keep one chip, but never lose the marker
-      // on the item being viewed.
-      if (existing) {
-        if (isCurrent) existing.current = true;
-        continue;
-      }
-      options.push({ value, slug: m.slug, current: isCurrent });
-    }
-    if (options.length > 1) out.push({ label, options });
+  const labels: string[] = [];
+  for (const s of product.specs) {
+    const key = s.label.trim().toLowerCase();
+    if (!s.variant || !key || !s.value.trim() || labels.some((l) => l.toLowerCase() === key)) continue;
+    labels.push(s.label.trim());
   }
-  return out;
+
+  const currentSignature = colorSignature(product);
+  /** Same values for every flagged spec except `except` (colour is checked separately). */
+  const specsMatch = (p: Product, except?: string) =>
+    labels.every((label) => label.toLowerCase() === except?.toLowerCase() || specValue(p, label) === specValue(product, label));
+
+  const rows: VariantRow[] = [];
+
+  if (members.some((p) => p.colors.length > 0)) {
+    const choices: VariantChoice[] = [];
+    for (const m of members) {
+      const signature = colorSignature(m);
+      if (!signature || choices.some((c) => c.key === signature)) continue;
+      const isCurrent = signature === currentSignature;
+      // A colour is clickable when the series has a product painted that way with
+      // the currently selected values of every flagged spec.
+      const target = isCurrent ? null : members.find((p) => colorSignature(p) === signature && specsMatch(p));
+      choices.push({ key: signature, colors: m.colors, current: isCurrent, slug: target?.slug ?? null });
+    }
+    if (choices.length > 1) rows.push({ id: "color", kind: "color", label: "Цвет", choices });
+  }
+
+  for (const label of labels) {
+    const values: string[] = [];
+    for (const m of members) {
+      const value = specValue(m, label);
+      if (value && !values.some((v) => v.toLowerCase() === value.toLowerCase())) values.push(value);
+    }
+    const choices: VariantChoice[] = values.map((value) => {
+      const isCurrent = specValue(product, label).toLowerCase() === value.toLowerCase();
+      const target = isCurrent
+        ? undefined
+        : members.find(
+            (p) =>
+              specValue(p, label).toLowerCase() === value.toLowerCase() &&
+              colorSignature(p) === currentSignature &&
+              specsMatch(p, label),
+          );
+      return { key: value.toLowerCase(), text: value, current: isCurrent, slug: target?.slug ?? null };
+    });
+    if (choices.length > 1) rows.push({ id: `spec-${label.toLowerCase()}`, kind: "spec", label, choices });
+  }
+
+  return rows;
 }
 
 export function relatedProducts(db: Database, product: Product, limit = 4) {

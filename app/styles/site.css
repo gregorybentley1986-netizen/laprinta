@@ -1066,6 +1066,7 @@
 .gallery__nav {
   position: absolute;
   top: 50%;
+  z-index: 3;
   display: grid;
   place-items: center;
   width: var(--tap);
@@ -1075,11 +1076,20 @@
   background: rgba(7, 9, 12, 0.66);
   color: var(--c-fg);
   opacity: 0;
+  pointer-events: none;
   transition: opacity var(--dur) var(--ease), background-color var(--dur-fast) var(--ease);
 }
 .gallery__stage:hover .gallery__nav,
+.gallery__stage:focus-within .gallery__nav,
 .gallery__nav:focus-visible {
   opacity: 1;
+  pointer-events: auto;
+}
+/* Touch screens swipe instead — arrows are pointless there */
+@media (hover: none), (pointer: coarse) {
+  .gallery__nav {
+    display: none;
+  }
 }
 .gallery__nav:hover {
   background: var(--c-accent);
@@ -1102,8 +1112,7 @@
   font-size: var(--fs-xs);
   font-variant-numeric: tabular-nums;
 }
-.gallery__stage--glb .gallery__counter,
-.gallery__stage--video .gallery__counter {
+.gallery__stage--glb .gallery__counter {
   display: none;
 }
 .gallery__thumbs {
@@ -1277,6 +1286,28 @@ a.variant-chip:focus-visible {
   border-color: var(--c-ink);
   color: #fff;
   font-weight: 500;
+}
+/* Combination that does not exist in the series: the colour stays itself,
+   just faded to 20% — no grey/white overlay */
+.color-variant.is-unavailable svg {
+  opacity: 0.2;
+}
+.variant-chip.is-unavailable {
+  border-style: dashed;
+  color: var(--c-ink-muted);
+  opacity: 0.55;
+  cursor: default;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 .buybox__actions {
   display: grid;
