@@ -81,6 +81,7 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
   };
 
   const setSpec = (i: number, key: "label" | "value", value: string) => set("specs", v.specs.map((s, j) => (j === i ? { ...s, [key]: value } : s)));
+  const setSpecFlag = (i: number, variant: boolean) => set("specs", v.specs.map((s, j) => (j === i ? { ...s, variant } : s)));
   const moveSpec = (i: number, d: -1 | 1) => {
     const next = [...v.specs];
     const j = i + d;
@@ -203,12 +204,23 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
                 <div className="specs__head" aria-hidden="true">
                   <span>Параметр</span>
                   <span>Значение</span>
+                  <span>Различие</span>
+                  <span />
                 </div>
               )}
               {v.specs.map((s, i) => (
                 <div key={i} className="specs__row">
                   <input className="input input--sm" aria-label="Параметр" value={s.label} onChange={(e) => setSpec(i, "label", e.target.value)} />
                   <input className="input input--sm" aria-label="Значение" value={s.value} onChange={(e) => setSpec(i, "value", e.target.value)} />
+                  <label className="specs__flag" title="Выводить как различие товара в серии — его значения появятся в карточке для выбора">
+                    <input
+                      type="checkbox"
+                      checked={!!s.variant}
+                      aria-label={`Выводить «${s.label || "параметр"}» как различие в серии`}
+                      onChange={(e) => setSpecFlag(i, e.target.checked)}
+                    />
+                    <span>в серии</span>
+                  </label>
                   <div className="specs__tools">
                     <button type="button" className="aicon-btn" aria-label="Выше" onClick={() => moveSpec(i, -1)} disabled={i === 0}>
                       <Icon name="chevronDown" size={16} style={{ transform: "rotate(180deg)" }} />
@@ -226,6 +238,9 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
                 <Icon name="plus" size={16} />
                 Добавить характеристику
               </button>
+              <p className="field__hint">
+                Галочка «в серии» помечает параметр, которым товары одной серии отличаются друг от друга (например, грузоподъёмность). Его значения появятся в карточке как выбор товара — как у цветов.
+              </p>
             </div>
           </section>
 

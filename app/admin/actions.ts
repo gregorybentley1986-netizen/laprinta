@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin-auth";
 import { SESSION_COOKIE, SESSION_TTL_S, checkPassword, createSessionToken } from "@/lib/auth-token";
-import { mutateDb, newId } from "@/lib/db";
+import { mutateDb, newId, readDb } from "@/lib/db";
 import { isValidSlug, slugify } from "@/lib/slug";
 import { deleteProductUploads, deleteUpload, copyProductUploads } from "@/lib/storage";
 import { MAX_COLORS, nameToHex, parseHexList } from "@/lib/colors";
@@ -62,7 +62,7 @@ export type ProductInput = {
   material: string;
   series: string;
   colors: ProductColor[];
-  specs: { label: string; value: string }[];
+  specs: { label: string; value: string; variant?: boolean }[];
   marketplace: { ozonUrl?: string; wildberriesUrl?: string };
   seo: { title: string; description: string };
 };
@@ -127,7 +127,9 @@ export async function saveProduct(input: ProductInput): Promise<ActionResult<{ i
       material: input.material.trim(),
       series: (input.series ?? "").trim().replace(/\s+/g, " ").slice(0, 120),
       colors: cleanColors(input.colors),
-      specs: input.specs.map((s) => ({ label: s.label.trim(), value: s.value.trim() })).filter((s) => s.label && s.value),
+      specs: input.specs
+        .map((s) => ({ label: s.label.trim(), value: s.value.trim(), variant: s.variant ? true : undefined }))
+        .filter((s) => s.label && s.value),
       marketplace: { ozonUrl: cleanUrl(input.marketplace.ozonUrl), wildberriesUrl: cleanUrl(input.marketplace.wildberriesUrl) },
       seo: { title: input.seo.title.trim(), description: input.seo.description.trim() },
       updatedAt: now,
@@ -177,50 +179,52 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
 /**
  * Copies a product with all its media into a new draft. The copy gets a free
  * slug (`-copy`, `-copy-2`), an empty SKU and `draft` status so it never goes
- * live before someone edits it. Files are physically duplicated, because media
- * URLs are tied to the product folder.
+ * live before someone edits it. Files are duplicated before the row is inserted
+ * in one mutation — a restart mid-way otherwise leaves a product without photos.
  */
 export async function duplicateProduct(id: string): Promise<ActionResult<{ id: string }>> {
   await requireAdmin();
+  const snapshot = await readDb();
+  const src = snapshot.products.find((p) => p.id === id);
+  if (!src) return fail("Товар не найден");
+
+  const copyId = newId();
+  let media: ProductMedia[] = [];
+  try {
+    media = await copyProductUploads(src.id, copyId, src.media);
+  } catch {
+    media = [];
+  }
+
   const res = await mutateDb((db) => {
-    const src = db.products.find((p) => p.id === id);
-    if (!src) return fail("Товар не найден");
+    const live = db.products.find((p) => p.id === id);
+    if (!live) return fail("Товар не найден");
     const now = new Date().toISOString();
-    const copyId = newId();
-    let slug = `${src.slug}-copy`;
-    for (let n = 2; db.products.some((p) => p.slug === slug); n += 1) slug = `${src.slug}-copy-${n}`;
+    let slug = `${live.slug}-copy`;
+    for (let n = 2; db.products.some((p) => p.slug === slug); n += 1) slug = `${live.slug}-copy-${n}`;
 
     const copy: Product = {
-      ...structuredClone(src),
+      ...structuredClone(live),
       id: copyId,
       slug,
-      name: `${src.name} (копия)`,
+      name: `${live.name} (копия)`,
       sku: "",
       status: "draft",
-      sortOrder: nextSortOrder(db, src.sectionId),
-      media: [],
+      sortOrder: nextSortOrder(db, live.sectionId),
+      media,
       createdAt: now,
       updatedAt: now,
     };
     db.products.push(copy);
-    return { ok: true as const, id: copyId, sourceId: src.id, sourceMedia: structuredClone(src.media) };
+    return { ok: true as const, id: copyId };
   });
-  if (!res.ok) return res;
 
-  let media: ProductMedia[] = [];
-  try {
-    media = await copyProductUploads(res.sourceId, res.id, res.sourceMedia);
-  } catch {
-    media = [];
-  }
-  if (media.length) {
-    await mutateDb((db) => {
-      const p = db.products.find((x) => x.id === res.id);
-      if (p) p.media = media;
-    });
+  if (!res.ok) {
+    await deleteProductUploads(copyId);
+    return res;
   }
   refresh();
-  return { ok: true, id: res.id };
+  return res;
 }
 
 export async function updatePrice(id: string, priceRub: number | null): Promise<ActionResult> {

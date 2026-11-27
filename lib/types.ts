@@ -28,7 +28,12 @@ export type ProductMedia = {
   createdAt: string;
 };
 
-export type ProductSpec = { label: string; value: string };
+export type ProductSpec = {
+  label: string;
+  value: string;
+  /** Value differs between products of one series → shown as a selector on the card. */
+  variant?: boolean;
+};
 
 /**
  * A colour variant of a product. `hex` is `#rrggbb`, or two hex values separated

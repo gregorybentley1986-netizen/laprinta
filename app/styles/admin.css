@@ -633,7 +633,7 @@ a.prow__name:hover {
 .specs__head,
 .specs__row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto auto;
   gap: var(--sp-2);
   width: 100%;
   align-items: center;
@@ -645,6 +645,24 @@ a.prow__name:hover {
 }
 .specs__tools {
   display: flex;
+}
+.specs__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--fs-xs);
+  color: var(--c-ink-muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.specs__flag input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--c-ink-accent);
+  cursor: pointer;
+}
+.specs__flag:hover {
+  color: var(--c-ink);
 }
 
 /* Media manager */

@@ -150,6 +150,49 @@ export function productsInSeries(db: Database, product: Product): Product[] {
   return listProducts(db, null).filter((p) => seriesKey(p.series) === key);
 }
 
+export type VariantAttribute = {
+  label: string;
+  options: { value: string; slug: string; current: boolean }[];
+};
+
+/**
+ * Specs flagged `variant` turn into selectors on the card: every product of the
+ * same series that carries the same attribute becomes an option, so a series can
+ * differ by load capacity while the colour stays the same.
+ */
+export function variantAttributes(db: Database, product: Product): VariantAttribute[] {
+  const flagged = product.specs.filter((s) => s.variant && s.value.trim());
+  if (!flagged.length) return [];
+  const members = productsInSeries(db, product);
+  if (members.length < 2) return [];
+
+  const out: VariantAttribute[] = [];
+  const seen = new Set<string>();
+  for (const spec of flagged) {
+    const label = spec.label.trim();
+    const key = label.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const options: VariantAttribute["options"] = [];
+    for (const m of members) {
+      const value = m.specs.find((s) => s.label.trim().toLowerCase() === key)?.value.trim();
+      if (!value) continue;
+      const isCurrent = m.id === product.id;
+      const existing = options.find((o) => o.value.toLowerCase() === value.toLowerCase());
+      // Same value on several members: keep one chip, but never lose the marker
+      // on the item being viewed.
+      if (existing) {
+        if (isCurrent) existing.current = true;
+        continue;
+      }
+      options.push({ value, slug: m.slug, current: isCurrent });
+    }
+    if (options.length > 1) out.push({ label, options });
+  }
+  return out;
+}
+
 export function relatedProducts(db: Database, product: Product, limit = 4) {
   const all = listProducts(db, null).filter((p) => p.id !== product.id);
   const section = db.sections.find((s) => s.id === product.sectionId);

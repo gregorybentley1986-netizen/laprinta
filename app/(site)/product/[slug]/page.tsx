@@ -7,6 +7,7 @@ import { FavButton } from "@/components/site/FavButton";
 import { ProductGallery, type GalleryItem } from "@/components/site/ProductGallery";
 import { ProductGrid } from "@/components/site/ProductCard";
 import { ProductColorLinks, type ColorVariant } from "@/components/site/ProductColorLinks";
+import { ProductVariantOptions } from "@/components/site/ProductVariantOptions";
 import { SeriesCarousel } from "@/components/site/SeriesCarousel";
 import { Icon } from "@/components/ui/Icon";
 import {
@@ -19,6 +20,7 @@ import {
   relatedProducts,
   sectionHref,
   sortedMedia,
+  variantAttributes,
 } from "@/lib/catalog";
 import { toCard } from "@/lib/cards";
 import { readDb } from "@/lib/db";
@@ -66,6 +68,7 @@ export default async function ProductPage({ params }: Props) {
     colors: p.colors,
     current: p.id === product.id,
   }));
+  const variantGroups = variantAttributes(db, product);
   const related = relatedProducts(db, product)
     .filter((p) => !seriesShown || !seriesProducts.some((s) => s.id === p.id))
     .map((p) => toCard(db, p));
@@ -150,6 +153,7 @@ export default async function ProductPage({ params }: Props) {
             <p className="buybox__note">Цена за 1 шт. · ориентир для каталога</p>
 
             <ProductColorLinks items={colorVariants} />
+            <ProductVariantOptions groups={variantGroups} />
 
             <div className="buybox__actions">
               <CartButton id={product.id} name={product.name} variant="buybox" />

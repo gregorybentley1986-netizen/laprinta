@@ -1240,6 +1240,44 @@ a.color-variant:focus-visible {
   display: block;
   flex: none;
 }
+/* Attribute-based variants (грузоподъёмность, длина…) inside a series */
+.variant-options {
+  display: grid;
+  gap: var(--sp-3);
+}
+.variant-options__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  list-style: none;
+}
+.variant-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--c-ink-line);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-ink);
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+a.variant-chip:hover {
+  border-color: var(--c-ink-accent-line);
+  color: var(--c-ink-accent);
+}
+a.variant-chip:focus-visible {
+  outline: 2px solid var(--c-ink-accent);
+  outline-offset: 2px;
+}
+.variant-chip.is-current {
+  background: var(--c-ink);
+  border-color: var(--c-ink);
+  color: #fff;
+  font-weight: 500;
+}
 .buybox__actions {
   display: grid;
   gap: var(--sp-2);
