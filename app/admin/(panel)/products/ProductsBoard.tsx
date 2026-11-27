@@ -21,7 +21,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { Icon } from "@/components/ui/Icon";
 import type { ProductStatus } from "@/lib/types";
-import { moveProduct, saveProductLayout, updatePrice, updateProductStatus } from "../../actions";
+import { duplicateProduct, moveProduct, saveProductLayout, updatePrice, updateProductStatus } from "../../actions";
 import { useToast } from "../Toast";
 
 export type BoardSection = { id: string; title: string; depth: number; hidden: boolean; href: string };
@@ -195,6 +195,12 @@ export function ProductsBoard({ sections, products, initialSection }: { sections
     toast(`Перенесено в «${sectionById.get(sectionId)?.title}»`);
     router.refresh();
   };
+  const onDuplicate = async (id: string) => {
+    const res = await duplicateProduct(id);
+    if (!res.ok) return toast(res.error, "error");
+    toast("Копия создана черновиком");
+    router.refresh();
+  };
 
   const total = Object.values(layout).reduce((n, ids) => n + ids.length, 0);
   const visibleSections = sections.filter((s) => !selected || s.id === selected);
@@ -248,7 +254,7 @@ export function ProductsBoard({ sections, products, initialSection }: { sections
             return (
               <Group key={s.id} section={s} ids={ids} disabled={searching} showEmpty={!selected ? !activeId && !(layout[s.id] ?? []).length : true}>
                 {ids.map((id) => (
-                  <Row key={id} product={byId.get(id)!} sections={sections} disabled={searching} onPrice={onPrice} onStatus={onStatus} onMove={onMove} />
+                  <Row key={id} product={byId.get(id)!} sections={sections} disabled={searching} onPrice={onPrice} onStatus={onStatus} onMove={onMove} onDuplicate={onDuplicate} />
                 ))}
               </Group>
             );
@@ -313,9 +319,10 @@ type RowProps = {
   onPrice: (id: string, v: number | null) => void;
   onStatus: (id: string, s: ProductStatus) => void;
   onMove: (id: string, sectionId: string) => void;
+  onDuplicate: (id: string) => void;
 };
 
-function Row({ product, sections, disabled, onPrice, onStatus, onMove }: RowProps) {
+function Row({ product, sections, disabled, onPrice, onStatus, onMove, onDuplicate }: RowProps) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id: product.id, disabled });
   const [price, setPrice] = useState(product.priceRub?.toString() ?? "");
   useEffect(() => setPrice(product.priceRub?.toString() ?? ""), [product.priceRub]);
@@ -380,6 +387,9 @@ function Row({ product, sections, disabled, onPrice, onStatus, onMove }: RowProp
         </select>
       </label>
       <div className="prow__actions">
+        <button type="button" className="aicon-btn" aria-label={`Дублировать «${product.name}»`} title="Дублировать" onClick={() => onDuplicate(product.id)}>
+          <Icon name="copy" size={16} />
+        </button>
         <Link href={`/admin/products/${product.id}`} className="aicon-btn" aria-label={`Редактировать «${product.name}»`} title="Редактировать">
           <Icon name="chevronRight" size={18} />
         </Link>

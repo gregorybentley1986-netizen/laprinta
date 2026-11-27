@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { slugify } from "@/lib/slug";
 import type { ProductColor, ProductStatus } from "@/lib/types";
-import { deleteProduct, saveProduct, type ProductInput } from "../../actions";
+import { deleteProduct, duplicateProduct, saveProduct, type ProductInput } from "../../actions";
 import { useToast } from "../Toast";
 import { ColorEditor } from "./ColorEditor";
 import type { SectionOption, SeriesOption } from "./data";
@@ -67,6 +67,16 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
       if (!res.ok) return toast(res.error, "error");
       toast("Товар удалён");
       router.push("/admin/products");
+    });
+  };
+
+  const duplicate = () => {
+    if (!initial.id) return;
+    startTransition(async () => {
+      const res = await duplicateProduct(initial.id!);
+      if (!res.ok) return toast(res.error, "error");
+      toast("Копия создана — проверьте артикул, цену и статус");
+      router.push(`/admin/products/${res.id}`);
     });
   };
 
@@ -284,6 +294,12 @@ export function ProductForm({ initial, sections, seriesOptions = [], publicUrl, 
             <button type="submit" className="abtn abtn--primary abtn--block" disabled={pending}>
               {pending ? "Сохраняем…" : isNew ? "Создать товар" : "Сохранить"}
             </button>
+            {!isNew && (
+              <button type="button" className="abtn abtn--ghost abtn--block" onClick={duplicate} disabled={pending}>
+                <Icon name="copy" size={16} />
+                Дублировать товар
+              </button>
+            )}
             {!isNew && (
               <button type="button" className="abtn abtn--danger-ghost abtn--block" onClick={remove} disabled={pending}>
                 <Icon name="trash" size={16} />

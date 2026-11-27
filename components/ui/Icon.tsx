@@ -34,6 +34,12 @@ const PATHS = {
     </>
   ),
   trash: <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6" />,
+  copy: (
+    <>
+      <rect x="9" y="9" width="11" height="11" rx="1.5" />
+      <path d="M5 15V5.5A1.5 1.5 0 0 1 6.5 4H16" />
+    </>
+  ),
   upload: <path d="M12 16V4M7 9l5-5 5 5M4 16v3.5h16V16" />,
   eye: (
     <>

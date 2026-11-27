@@ -7,9 +7,9 @@ import { requireAdmin } from "@/lib/admin-auth";
 import { SESSION_COOKIE, SESSION_TTL_S, checkPassword, createSessionToken } from "@/lib/auth-token";
 import { mutateDb, newId } from "@/lib/db";
 import { isValidSlug, slugify } from "@/lib/slug";
-import { deleteProductUploads, deleteUpload } from "@/lib/storage";
+import { deleteProductUploads, deleteUpload, copyProductUploads } from "@/lib/storage";
 import { MAX_COLORS, nameToHex, parseHexList } from "@/lib/colors";
-import type { CatalogSection, Database, Product, ProductColor, ProductStatus, SectionStatus } from "@/lib/types";
+import type { CatalogSection, Database, Product, ProductColor, ProductMedia, ProductStatus, SectionStatus } from "@/lib/types";
 
 export type ActionResult<T = object> = ({ ok: true } & T) | { ok: false; error: string };
 
@@ -172,6 +172,55 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
     refresh();
   }
   return res;
+}
+
+/**
+ * Copies a product with all its media into a new draft. The copy gets a free
+ * slug (`-copy`, `-copy-2`), an empty SKU and `draft` status so it never goes
+ * live before someone edits it. Files are physically duplicated, because media
+ * URLs are tied to the product folder.
+ */
+export async function duplicateProduct(id: string): Promise<ActionResult<{ id: string }>> {
+  await requireAdmin();
+  const res = await mutateDb((db) => {
+    const src = db.products.find((p) => p.id === id);
+    if (!src) return fail("Товар не найден");
+    const now = new Date().toISOString();
+    const copyId = newId();
+    let slug = `${src.slug}-copy`;
+    for (let n = 2; db.products.some((p) => p.slug === slug); n += 1) slug = `${src.slug}-copy-${n}`;
+
+    const copy: Product = {
+      ...structuredClone(src),
+      id: copyId,
+      slug,
+      name: `${src.name} (копия)`,
+      sku: "",
+      status: "draft",
+      sortOrder: nextSortOrder(db, src.sectionId),
+      media: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    db.products.push(copy);
+    return { ok: true as const, id: copyId, sourceId: src.id, sourceMedia: structuredClone(src.media) };
+  });
+  if (!res.ok) return res;
+
+  let media: ProductMedia[] = [];
+  try {
+    media = await copyProductUploads(res.sourceId, res.id, res.sourceMedia);
+  } catch {
+    media = [];
+  }
+  if (media.length) {
+    await mutateDb((db) => {
+      const p = db.products.find((x) => x.id === res.id);
+      if (p) p.media = media;
+    });
+  }
+  refresh();
+  return { ok: true, id: res.id };
 }
 
 export async function updatePrice(id: string, priceRub: number | null): Promise<ActionResult> {

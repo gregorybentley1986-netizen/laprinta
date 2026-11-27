@@ -1,5 +1,5 @@
 import "server-only";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile, copyFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import { newId } from "./db";
@@ -77,6 +77,43 @@ export async function deleteUpload(url: string) {
 
 export async function deleteProductUploads(productId: string) {
   await rm(path.join(UPLOAD_DIR, "products", productId), { recursive: true, force: true });
+}
+
+/**
+ * Duplicates the files of an existing product into a new product folder and
+ * returns media entries pointing at the copies. Media lives under
+ * `uploads/products/<productId>/`, so simply sharing the URLs would break as
+ * soon as either product is deleted (`deleteProductUploads` removes the folder).
+ */
+export async function copyProductUploads(sourceId: string, targetId: string, media: ProductMedia[]): Promise<ProductMedia[]> {
+  if (!/^[a-z0-9-]{1,48}$/.test(sourceId) || !/^[a-z0-9-]{1,48}$/.test(targetId)) throw new UploadError("Некорректный идентификатор");
+  const srcDir = path.join(UPLOAD_DIR, "products", sourceId);
+  const dstDir = path.join(UPLOAD_DIR, "products", targetId);
+  const remap = new Map<string, string>();
+  const out: ProductMedia[] = [];
+
+  for (const m of media) {
+    const rel = m.url.startsWith(MEDIA_PREFIX) ? m.url.slice(MEDIA_PREFIX.length) : "";
+    const file = rel ? path.resolve(UPLOAD_DIR, rel) : "";
+    if (!file || !file.startsWith(srcDir + path.sep)) {
+      out.push({ ...m });
+      continue;
+    }
+    const id = newId();
+    const name = id + path.extname(file);
+    try {
+      await mkdir(dstDir, { recursive: true });
+      await copyFile(file, path.join(dstDir, name));
+    } catch {
+      out.push({ ...m });
+      continue;
+    }
+    const url = `${MEDIA_PREFIX}products/${targetId}/${name}`;
+    remap.set(m.url, url);
+    out.push({ ...m, id, url });
+  }
+
+  return out.map((m) => (m.posterUrl && remap.has(m.posterUrl) ? { ...m, posterUrl: remap.get(m.posterUrl) } : m));
 }
 
 export async function deleteArticleUploads(articleId: string) {
