@@ -187,6 +187,17 @@ class Styles {
   }
 
   xml() {
+    // cellXfs first: mapping it lazily registers the fonts, fills and number
+    // formats they reference. Building the lists before that produced
+    // count="7" with a single <font>, which Excel flags as unreadable content.
+    const cellXfs = this.xf
+      .map((k) => {
+        const vAlign = k.vAlign === "middle" ? "center" : k.vAlign; // "middle" is not valid ST_VerticalAlignment
+        const align = `horizontal="${k.align}" vertical="${vAlign}"${k.wrap ? ' wrapText="1"' : ""}`;
+        return `<xf numFmtId="${this.numFmtId(k)}" fontId="${this.fontId(k)}" fillId="${this.fillId(k)}" borderId="${k.border ? 1 : 0}" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyNumberFormat="1"><alignment ${align}/></xf>`;
+      })
+      .join("");
+
     const fonts = this.fonts
       .map(
         (f) =>
@@ -197,12 +208,6 @@ class Styles {
       `<fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>` +
       this.fills.map((c) => `<fill><patternFill patternType="solid"><fgColor rgb="${rgb(c)}"/><bgColor indexed="64"/></patternFill></fill>`).join("");
     const border = `<border><left style="thin"><color rgb="${rgb("#d5dae0")}"/></left><right style="thin"><color rgb="${rgb("#d5dae0")}"/></right><top style="thin"><color rgb="${rgb("#d5dae0")}"/></top><bottom style="thin"><color rgb="${rgb("#d5dae0")}"/></bottom><diagonal/></border>`;
-    const cellXfs = this.xf
-      .map((k) => {
-        const align = `horizontal="${k.align}" vertical="${k.vAlign}"${k.wrap ? ' wrapText="1"' : ""}`;
-        return `<xf numFmtId="${this.numFmtId(k)}" fontId="${this.fontId(k)}" fillId="${this.fillId(k)}" borderId="${k.border ? 1 : 0}" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1" applyNumberFormat="1"><alignment ${align}/></xf>`;
-      })
-      .join("");
     const numFmts = this.numFmts.length
       ? `<numFmts count="${this.numFmts.length}">${this.numFmts
           .map((f, i) => `<numFmt numFmtId="${164 + i}" formatCode="${esc(f)}"/>`)
