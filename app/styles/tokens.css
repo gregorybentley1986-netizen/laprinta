@@ -1,0 +1,94 @@
+/* laprinta design tokens — single source for site and admin. */
+:root {
+  /* Dark chrome (header, sidebar, catalog/product pages) */
+  --c-bg: #07090c;
+  --c-bg-raised: #0c1015;
+  --c-bg-elev: #121820;
+  --c-bg-hover: #161d26;
+  --c-line: rgba(232, 238, 242, 0.1);
+  --c-line-strong: rgba(232, 238, 242, 0.18);
+  --c-fg: #e8eef2;
+  --c-fg-soft: #c5ced6;
+  --c-fg-muted: #8b959f; /* 6.4:1 on --c-bg */
+
+  /* Brand accent (logo cyan) — only on dark surfaces or as fill */
+  --c-accent: #00e8ef;
+  --c-accent-hover: #5ff3f7;
+  --c-accent-ink: #041214; /* text on accent fill */
+  --c-accent-soft: rgba(0, 232, 239, 0.14);
+  --c-accent-line: rgba(0, 232, 239, 0.35);
+
+  /* Light content: product cards, light band */
+  --c-surface: #ffffff;
+  --c-surface-alt: #f3f5f7;
+  --c-surface-sunken: #eef1f4;
+  --c-ink: #10151b;
+  --c-ink-muted: #5c6772; /* 5.9:1 on white */
+  --c-ink-line: #d5dbe3;
+  --c-ink-accent: #067a80; /* accent text on white, 5.1:1 */
+  --c-ink-accent-line: #7adce0;
+
+  --c-danger: #ff6b6b;
+  --c-danger-ink: #b42318;
+  --c-success: #2bd4a4;
+  --c-warn: #ffb547;
+  --c-warn-ink: #8a5300;
+
+  /* Typography */
+  --font-body: var(--font-plex), "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-raleway), "Raleway", var(--font-body);
+  --font-brand: var(--font-arista), "Arista Pro SemiBold", var(--font-heading);
+
+  --fs-2xs: 0.6875rem; /* 11 — overlines */
+  --fs-xs: 0.75rem; /* 12 */
+  --fs-sm: 0.875rem; /* 14 */
+  --fs-base: 1rem; /* 16 */
+  --fs-md: 1.125rem; /* 18 */
+  --fs-lg: 1.375rem; /* 22 */
+  --fs-xl: clamp(1.625rem, 1.2rem + 1.4vw, 2.25rem); /* 26 → 36 */
+  --fs-2xl: clamp(2rem, 1.35rem + 2.4vw, 3.25rem); /* 32 → 52 */
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.3;
+  --lh-body: 1.55;
+  --tracking-tight: -0.02em;
+  --tracking-overline: 0.14em;
+
+  /* Spacing — 4px grid */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4rem;
+  --sp-9: 6rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+
+  /* Layout */
+  --max-w: 1440px;
+  --max-w-text: 42rem;
+  --header-h: 4rem;
+  --sidebar-w: 15.5rem;
+  --tap: 2.75rem; /* 44px min touch target */
+
+  /* Shape */
+  --r-xs: 2px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-pill: 999px;
+
+  /* Elevation & glow */
+  --sh-card: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --sh-card-hover: 0 18px 40px -18px rgba(0, 232, 239, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --sh-pop: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --glow-text: 0 0 18px rgba(0, 232, 239, 0.22);
+  --glow-text-hover: 0 0 10px rgba(0, 232, 239, 0.45), 0 0 28px rgba(0, 232, 239, 0.28);
+  --focus-ring: 0 0 0 2px var(--c-bg), 0 0 0 4px var(--c-accent);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 240ms;
+}
