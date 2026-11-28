@@ -34,14 +34,23 @@ export function CartView({ products }: { products: CardProduct[] }) {
   const [agree, setAgree] = useState(false);
   const [cleared, setCleared] = useState(false);
   /** Попытка скачать без согласия: подсвечиваем флаг и объясняем, чего не хватает. */
-  const [consentHint, setConsentHint] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
   const [highlight, setHighlight] = useState(false);
   const consentRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLElement>(null);
+  /** Согласие имеет смысл только когда есть какие-то данные: пока все поля пусты, флаг заблокирован. */
+  const hasData = Object.values(customer).some((value) => value.trim().length > 0);
 
   useEffect(() => setCustomer(loadCustomer()), []);
   useEffect(() => {
     if (hydrated) prune(new Set(byId.keys()));
   }, [hydrated, byId, prune]);
+  useEffect(() => {
+    if (!hasData) {
+      setAgree(false);
+      setHighlight(false);
+    }
+  }, [hasData]);
 
   const items = lines.flatMap((l) => {
     const p = byId.get(l.id);
@@ -54,25 +63,32 @@ export function CartView({ products }: { products: CardProduct[] }) {
     const next = { ...customer, [key]: value };
     setCustomer(next);
     saveCustomer(next);
+    if (value.trim().length > 0) setHint(null);
   };
 
   /** Кнопки не блокируются через disabled: клик должен сработать и показать, чего не хватает. */
   const requireConsent = () => {
-    setConsentHint(true);
     setError(null);
     setHighlight(true);
+    window.setTimeout(() => setHighlight(false), 2600);
+
+    if (!hasData) {
+      setHint("Сначала укажите хотя бы одно поле — имя, телефон или e-mail. Согласие на обработку данных станет доступно после этого.");
+      formRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      (formRef.current?.querySelector("input, textarea") as HTMLElement | null)?.focus({ preventScroll: true });
+      return;
+    }
+
+    setHint("Чтобы скачать документ, отметьте согласие на обработку персональных данных.");
     consentRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
     consentRef.current?.querySelector("input")?.focus({ preventScroll: true });
-    window.setTimeout(() => setHighlight(false), 2600);
   };
 
   const consentChanged = (checked: boolean) => {
     setAgree(checked);
     setError(null);
-    if (checked) {
-      setConsentHint(false);
-      setHighlight(false);
-    }
+    setHint(null);
+    setHighlight(false);
   };
 
   const download = async (format: "pdf" | "xlsx") => {
@@ -177,7 +193,7 @@ export function CartView({ products }: { products: CardProduct[] }) {
           </ul>
         </section>
 
-        <section className="cart-form" aria-labelledby="cart-form-title">
+        <section className={`cart-form${highlight && !hasData ? " is-highlight" : ""}`} aria-labelledby="cart-form-title" ref={formRef}>
           <h2 id="cart-form-title" className="cart__title">
             Данные для спецификации
           </h2>
@@ -253,15 +269,21 @@ export function CartView({ products }: { products: CardProduct[] }) {
         </div>
         {note && <p className="cart-summary__note">{note}</p>}
 
-        <div className={`consent${highlight ? " is-highlight" : ""}`} ref={consentRef}>
-          <label className="check consent__label">
-            <input type="checkbox" checked={agree} onChange={(e) => consentChanged(e.target.checked)} />
+        <div className={`consent${highlight && hasData ? " is-highlight" : ""}`} ref={consentRef}>
+          <label className={`check consent__label${hasData ? "" : " is-locked"}`}>
+            <input
+              type="checkbox"
+              checked={agree}
+              disabled={!hasData}
+              onChange={(e) => consentChanged(e.target.checked)}
+            />
             <span className="check__box" aria-hidden="true">
               <Icon name="check" size={12} />
             </span>
             <span>Я даю согласие на обработку персональных данных</span>
           </label>
           <p className="consent__note">
+            {hasData ? null : "Отметка станет доступна, как только вы укажете хотя бы одно поле. "}
             Текст согласия — <Link href="/consent" target="_blank" rel="noreferrer">отдельный документ</Link>, порядок
             обработки — <Link href="/privacy" target="_blank" rel="noreferrer">политика</Link>. Отозвать согласие можно
             письмом на <EmailLink subject="Отзыв согласия на обработку персональных данных" />.
@@ -288,10 +310,10 @@ export function CartView({ products }: { products: CardProduct[] }) {
           {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
-        {!agree && consentHint && (
+        {!agree && hint && (
           <p className="consent-alert" role="alert">
             <Icon name="info" size={16} />
-            Чтобы скачать документ, отметьте согласие на обработку персональных данных.
+            {hint}
           </p>
         )}
         {error && (

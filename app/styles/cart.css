@@ -486,3 +486,19 @@
   flex: none;
   margin-top: 0.1rem;
 }
+
+/* Consent stays disabled until the form holds at least one character. */
+.consent__label.is-locked,
+.consent__label.is-locked:hover,
+.consent__label.is-locked:has(input:checked) {
+  cursor: not-allowed;
+  color: var(--c-ink-muted);
+}
+.consent__label.is-locked .check__box {
+  opacity: 0.45;
+}
+.cart-form.is-highlight {
+  outline: 2px solid var(--c-ink-accent);
+  outline-offset: 6px;
+  border-radius: var(--r-xs);
+}
