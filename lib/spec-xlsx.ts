@@ -36,7 +36,7 @@ export function renderSpecXlsx({
   lines: SpecLine[];
   customer: CartCustomer;
   number: string;
-  consentAt?: string;
+  consentAt?: string | null;
   now?: Date;
 }): Buffer {
   const variantLabels: string[] = [];

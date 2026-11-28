@@ -81,7 +81,7 @@ export async function renderSpecPdf({
   lines: SpecLine[];
   customer: CartCustomer;
   number: string;
-  consentAt?: string;
+  consentAt?: string | null;
   now?: Date;
 }) {
   const f = await fonts();

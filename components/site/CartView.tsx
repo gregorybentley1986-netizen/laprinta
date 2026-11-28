@@ -37,9 +37,10 @@ export function CartView({ products }: { products: CardProduct[] }) {
   const [hint, setHint] = useState<string | null>(null);
   const [highlight, setHighlight] = useState(false);
   const consentRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLElement>(null);
   /** Согласие имеет смысл только когда есть какие-то данные: пока все поля пусты, флаг заблокирован. */
   const hasData = Object.values(customer).some((value) => value.trim().length > 0);
+  /** Без данных заказчика согласия не требуется: обрабатывать нечего. */
+  const canDownload = !hasData || agree;
 
   useEffect(() => setCustomer(loadCustomer()), []);
   useEffect(() => {
@@ -70,16 +71,8 @@ export function CartView({ products }: { products: CardProduct[] }) {
   const requireConsent = () => {
     setError(null);
     setHighlight(true);
-    window.setTimeout(() => setHighlight(false), 2600);
-
-    if (!hasData) {
-      setHint("Сначала укажите хотя бы одно поле — имя, телефон или e-mail. Согласие на обработку данных станет доступно после этого.");
-      formRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
-      (formRef.current?.querySelector("input, textarea") as HTMLElement | null)?.focus({ preventScroll: true });
-      return;
-    }
-
     setHint("Чтобы скачать документ, отметьте согласие на обработку персональных данных.");
+    window.setTimeout(() => setHighlight(false), 2600);
     consentRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
     consentRef.current?.querySelector("input")?.focus({ preventScroll: true });
   };
@@ -92,14 +85,14 @@ export function CartView({ products }: { products: CardProduct[] }) {
   };
 
   const download = async (format: "pdf" | "xlsx") => {
-    if (!agree) {
+    if (!canDownload) {
       requireConsent();
       return;
     }
     setPending(format);
     setError(null);
-    // Факт согласия уходит вместе с запросом и печатается в самом документе.
-    const consent = saveConsent(legal.consentVersion);
+    // Согласие фиксируется только когда есть данные; без них в документе нет заказчика.
+    const consent = agree ? saveConsent(legal.consentVersion) : undefined;
     try {
       const res = await fetch(format === "pdf" ? "/api/spec" : "/api/spec/xlsx", {
         method: "POST",
@@ -193,7 +186,7 @@ export function CartView({ products }: { products: CardProduct[] }) {
           </ul>
         </section>
 
-        <section className={`cart-form${highlight && !hasData ? " is-highlight" : ""}`} aria-labelledby="cart-form-title" ref={formRef}>
+        <section className="cart-form" aria-labelledby="cart-form-title">
           <h2 id="cart-form-title" className="cart__title">
             Данные для спецификации
           </h2>
@@ -283,7 +276,7 @@ export function CartView({ products }: { products: CardProduct[] }) {
             <span>Я даю согласие на обработку персональных данных</span>
           </label>
           <p className="consent__note">
-            {hasData ? null : "Отметка станет доступна, как только вы укажете хотя бы одно поле. "}
+            {hasData ? null : "Отметка станет доступна, как только вы укажете хотя бы одно поле; скачать можно и без данных — тогда в документе не будет данных заказчика. "}
             Текст согласия — <Link href="/consent" target="_blank" rel="noreferrer">отдельный документ</Link>, порядок
             обработки — <Link href="/privacy" target="_blank" rel="noreferrer">политика</Link>. Отозвать согласие можно
             письмом на <EmailLink subject="Отзыв согласия на обработку персональных данных" />.
@@ -292,8 +285,8 @@ export function CartView({ products }: { products: CardProduct[] }) {
 
         <button
           type="button"
-          className={`btn btn--primary btn--block${agree ? "" : " is-inactive"}`}
-          aria-disabled={!agree || pending !== null}
+          className={`btn btn--primary btn--block${canDownload ? "" : " is-inactive"}`}
+          aria-disabled={!canDownload || pending !== null}
           disabled={pending !== null}
           onClick={() => download("pdf")}
         >
@@ -302,15 +295,15 @@ export function CartView({ products }: { products: CardProduct[] }) {
         </button>
         <button
           type="button"
-          className={`btn btn--excel btn--block${agree ? "" : " is-inactive"}`}
-          aria-disabled={!agree || pending !== null}
+          className={`btn btn--excel btn--block${canDownload ? "" : " is-inactive"}`}
+          aria-disabled={!canDownload || pending !== null}
           disabled={pending !== null}
           onClick={() => download("xlsx")}
         >
           {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
-        {!agree && hint && (
+        {!canDownload && hint && (
           <p className="consent-alert" role="alert">
             <Icon name="info" size={16} />
             {hint}
