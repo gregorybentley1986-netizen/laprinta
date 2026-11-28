@@ -5,6 +5,7 @@ import { MAX_QTY, clampQty, type CartCustomer, type CartLine } from "./cart-math
 
 const KEY = "lp:cart";
 const CUSTOMER_KEY = "lp:cart-customer";
+const CONSENT_KEY = "lp:cart-consent";
 const EVENT = "lp:cart-change";
 const EMPTY: CartLine[] = [];
 const EMPTY_CUSTOMER: CartCustomer = { name: "", phone: "", email: "", company: "", comment: "" };
@@ -90,6 +91,31 @@ export function loadCustomer(): CartCustomer {
 
 export function saveCustomer(c: CartCustomer) {
   localStorage.setItem(CUSTOMER_KEY, JSON.stringify(c));
+}
+
+/** Отметка о согласии на обработку персональных данных (не является ПД сама по себе). */
+export type ConsentRecord = { version: string; acceptedAt: string };
+
+export function loadConsent(): ConsentRecord | null {
+  try {
+    const raw = JSON.parse(localStorage.getItem(CONSENT_KEY) ?? "null") as Partial<ConsentRecord> | null;
+    if (!raw || typeof raw.version !== "string" || typeof raw.acceptedAt !== "string") return null;
+    return { version: raw.version, acceptedAt: raw.acceptedAt };
+  } catch {
+    return null;
+  }
+}
+
+export function saveConsent(version: string): ConsentRecord {
+  const record: ConsentRecord = { version, acceptedAt: new Date().toISOString() };
+  localStorage.setItem(CONSENT_KEY, JSON.stringify(record));
+  return record;
+}
+
+/** Удаляет из браузера данные формы и отметку о согласии. */
+export function clearPersonalData() {
+  localStorage.removeItem(CUSTOMER_KEY);
+  localStorage.removeItem(CONSENT_KEY);
 }
 
 export { EMPTY_CUSTOMER };

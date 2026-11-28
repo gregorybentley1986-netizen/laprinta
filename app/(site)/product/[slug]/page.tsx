@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { CatalogNav } from "@/components/site/CatalogNav";
 import { CartButton } from "@/components/site/CartButton";
+import { EmailLink } from "@/components/site/EmailLink";
 import { FavButton } from "@/components/site/FavButton";
 import { ProductGallery, type GalleryItem } from "@/components/site/ProductGallery";
 import { ProductGrid } from "@/components/site/ProductCard";
@@ -173,10 +174,12 @@ export default async function ProductPage({ params }: Props) {
               ))}
             </dl>
 
-            <a className="buybox__contact" href={`mailto:${site.email}?subject=${encodeURIComponent(`${product.name} (${product.sku})`)}`}>
-              <Icon name="mail" size={16} />
-              Вопрос по товару или опт
-            </a>
+            <EmailLink
+              className="buybox__contact"
+              subject={`${product.name} (${product.sku})`}
+              icon={<Icon name="mail" size={16} />}
+              label="Вопрос по товару или опт"
+            />
           </aside>
         </div>
 

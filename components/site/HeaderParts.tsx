@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
 import { site } from "@/lib/site";
 import { Icon } from "@/components/ui/Icon";
+import { EmailLink } from "./EmailLink";
 import { Wordmark } from "./Wordmark";
 
 export type NavSection = { href: string; title: string; children: { href: string; title: string }[] };
@@ -123,7 +124,7 @@ export function MobileMenu({ sections }: { sections: NavSection[] }) {
             </div>
           )}
           <p className="drawer__foot">
-            <a href={`mailto:${site.email}`}>{site.email}</a>
+            <EmailLink />
           </p>
         </div>
       </div>

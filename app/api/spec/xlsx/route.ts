@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
   const number = specNumber();
   try {
-    const book = renderSpecXlsx({ lines: parsed.lines, customer: parsed.customer, number });
+    const book = renderSpecXlsx({ lines: parsed.lines, customer: parsed.customer, number, consentAt: parsed.consentAt });
     return new Response(new Uint8Array(book), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

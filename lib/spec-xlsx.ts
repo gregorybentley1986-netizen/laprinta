@@ -1,7 +1,8 @@
 import "server-only";
 import { cartTotals, lineSum, totalsNote, type CartCustomer } from "./cart-math";
 import { site } from "./site";
-import { specDate } from "./spec-meta";
+import { specDate, consentLine } from "./spec-meta";
+import { legal } from "./legal";
 import type { SpecLine } from "./spec-types";
 import { buildWorkbook, columnName, type Cell, type CellStyle } from "./xlsx";
 
@@ -29,11 +30,13 @@ export function renderSpecXlsx({
   lines,
   customer,
   number,
+  consentAt,
   now = new Date(),
 }: {
   lines: SpecLine[];
   customer: CartCustomer;
   number: string;
+  consentAt?: string;
   now?: Date;
 }): Buffer {
   const variantLabels: string[] = [];
@@ -65,6 +68,9 @@ export function renderSpecXlsx({
   const who = [customer.name, customer.company, customer.phone, customer.email].filter(Boolean).join(" · ");
   if (who) wide(`Заказчик: ${who}`, S.cell, 16);
   if (customer.comment) wide(`Комментарий: ${customer.comment}`, S.cell, 16);
+
+  const consent = consentAt ? consentLine(consentAt, legal.consentVersion) : null;
+  if (consent) wide(consent, S.sub, 14);
 
   push([]); // spacer
 

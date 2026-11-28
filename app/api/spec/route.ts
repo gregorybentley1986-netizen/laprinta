@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   const number = specNumber();
   try {
-    const pdf = await renderSpecPdf({ lines: parsed.lines, customer: parsed.customer, number });
+    const pdf = await renderSpecPdf({ lines: parsed.lines, customer: parsed.customer, number, consentAt: parsed.consentAt });
     return new Response(new Uint8Array(pdf), {
       headers: {
         "Content-Type": "application/pdf",

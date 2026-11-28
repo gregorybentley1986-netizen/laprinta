@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/site/Breadcrumbs";
 import { Icon } from "@/components/ui/Icon";
-import { site } from "@/lib/site";
+import { EmailLink } from "@/components/site/EmailLink";
 
 export const metadata: Metadata = { title: "Контакты", description: "Связаться с laprinta: вопросы по товарам, опт и сотрудничество." };
 
@@ -18,18 +18,21 @@ export default function ContactsPage() {
         <article className="info-card">
           <h3>Электронная почта</h3>
           <p>Вопросы по товарам, опт и сотрудничество.</p>
-          <a className="link-arrow link-arrow--ink" href={`mailto:${site.email}`}>
-            <Icon name="mail" size={16} />
-            {site.email}
-          </a>
+          <EmailLink className="link-arrow link-arrow--ink" icon={<Icon name="mail" size={16} />} />
         </article>
         <article className="info-card">
           <h3>Оптовым покупателям</h3>
           <p>Напишите, какие модели и объёмы интересуют, — пришлём условия и сроки производства партии.</p>
-          <a className="link-arrow link-arrow--ink" href={`mailto:${site.email}?subject=${encodeURIComponent("Опт")}`}>
-            Запросить условия
-            <Icon name="arrowRight" size={16} />
-          </a>
+          <EmailLink
+            className="link-arrow link-arrow--ink"
+            subject="Опт"
+            label={
+              <>
+                Запросить условия
+                <Icon name="arrowRight" size={16} />
+              </>
+            }
+          />
         </article>
         <article className="info-card">
           <h3>Каталог</h3>

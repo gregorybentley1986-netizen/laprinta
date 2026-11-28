@@ -2,6 +2,7 @@ import Link from "next/link";
 import { buildTree, sectionHref } from "@/lib/catalog";
 import { readDb } from "@/lib/db";
 import { site } from "@/lib/site";
+import { EmailLink } from "./EmailLink";
 import { Wordmark } from "./Wordmark";
 
 export async function SiteFooter() {
@@ -30,12 +31,13 @@ export async function SiteFooter() {
           <Link href="/about#production">Производство</Link>
           <Link href="/articles">Статьи</Link>
           <Link href="/contacts">Контакты</Link>
+          <Link href="/privacy">Политика обработки ПД</Link>
           <Link href="/favorites">Избранное</Link>
           <Link href="/cart">Корзина</Link>
         </nav>
         <div className="site-footer__col">
           <p className="overline">Связаться</p>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <EmailLink />
           <p className="site-footer__note">Опт и сотрудничество — напишите нам, ответим в течение рабочего дня.</p>
         </div>
       </div>

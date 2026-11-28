@@ -2283,3 +2283,35 @@ a.variant-chip:focus-visible {
     transition: none;
   }
 }
+
+/* Public e-mail: the address is stored reversed in the markup and flipped by
+   CSS, so regex harvesters find nothing while people read it normally. */
+.email-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  vertical-align: baseline;
+}
+.email-rev {
+  direction: rtl;
+  unicode-bidi: bidi-override;
+}
+.email-copy {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-xs);
+  color: var(--c-fg-muted);
+  transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.email-copy:hover {
+  color: var(--c-accent);
+  border-color: var(--c-accent-line);
+}
+.cart-summary .email-copy {
+  border-color: var(--c-ink-line);
+  color: var(--c-ink-accent);
+}

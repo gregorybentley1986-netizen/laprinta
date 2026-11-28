@@ -6,7 +6,8 @@ import sharp from "sharp";
 import { cartTotals, lineSum, totalsNote, type CartCustomer } from "./cart-math";
 import { MEDIA_PREFIX, UPLOAD_DIR } from "./paths";
 import { site } from "./site";
-import { specDate, specNumber } from "./spec-meta";
+import { consentLine, specDate, specNumber } from "./spec-meta";
+import { legal } from "./legal";
 import type { SpecLine } from "./spec-types";
 
 export type { SpecLine };
@@ -70,7 +71,19 @@ async function thumbnail(url: string | undefined): Promise<Buffer | null> {
 
 export { specNumber };
 
-export async function renderSpecPdf({ lines, customer, number, now = new Date() }: { lines: SpecLine[]; customer: CartCustomer; number: string; now?: Date }) {
+export async function renderSpecPdf({
+  lines,
+  customer,
+  number,
+  consentAt,
+  now = new Date(),
+}: {
+  lines: SpecLine[];
+  customer: CartCustomer;
+  number: string;
+  consentAt?: string;
+  now?: Date;
+}) {
   const f = await fonts();
   const thumbs = await Promise.all(lines.map((l) => thumbnail(l.product.cover?.url)));
 
@@ -144,6 +157,13 @@ export async function renderSpecPdf({ lines, customer, number, now = new Date() 
       doc.text(customer.comment, M, y + 11, { width: W, ...NUM });
       y += 11 + h + 8;
     }
+  }
+
+  // Proof that consent was given — printed, not only implied by the checkbox.
+  const consent = consentAt ? consentLine(consentAt, legal.consentVersion) : null;
+  if (consent) {
+    doc.font("R").fontSize(8).fillColor(C.muted).text(consent, M, y + 2, { width: W });
+    y += 13;
   }
   y += 10;
 

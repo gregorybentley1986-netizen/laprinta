@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { EMPTY_CUSTOMER, loadCustomer, saveCustomer, useCart } from "@/lib/cart";
+import { EMPTY_CUSTOMER, clearPersonalData, loadCustomer, saveCustomer, saveConsent, useCart } from "@/lib/cart";
 import { CUSTOMER_LIMITS, cartTotals, lineSum, totalsNote, type CartCustomer } from "@/lib/cart-math";
 import type { CardProduct } from "@/lib/cards";
 import { plural } from "@/lib/format";
+import { legal } from "@/lib/legal";
 import { Icon } from "@/components/ui/Icon";
 import { QtyStepper } from "./CartButton";
+import { EmailLink } from "./EmailLink";
 
 const rub = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
 const money = (n: number) => `${rub.format(n)} ₽`;
@@ -21,13 +23,16 @@ const FIELDS: { key: keyof CartCustomer; label: string; type?: string; autoCompl
   { key: "company", label: "Компания", autoComplete: "organization" },
 ];
 
-export function CartView({ products, email }: { products: CardProduct[]; email: string }) {
+export function CartView({ products }: { products: CardProduct[] }) {
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   const { lines, setQty, remove, clear, prune, maxQty } = useCart();
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const [customer, setCustomer] = useState<CartCustomer>(EMPTY_CUSTOMER);
   const [pending, setPending] = useState<"pdf" | "xlsx" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** Согласие не проставляется по умолчанию и не восстанавливается из браузера — его дают действием. */
+  const [agree, setAgree] = useState(false);
+  const [cleared, setCleared] = useState(false);
 
   useEffect(() => setCustomer(loadCustomer()), []);
   useEffect(() => {
@@ -48,13 +53,19 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
   };
 
   const download = async (format: "pdf" | "xlsx") => {
+    if (!agree) {
+      setError("Отметьте согласие на обработку персональных данных");
+      return;
+    }
     setPending(format);
     setError(null);
+    // Факт согласия уходит вместе с запросом и печатается в самом документе.
+    const consent = saveConsent(legal.consentVersion);
     try {
       const res = await fetch(format === "pdf" ? "/api/spec" : "/api/spec/xlsx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: items.map(({ id, qty }) => ({ id, qty })), customer }),
+        body: JSON.stringify({ items: items.map(({ id, qty }) => ({ id, qty })), customer, consent }),
       });
       if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "Не удалось сформировать документ");
       const blob = await res.blob();
@@ -147,7 +158,11 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
           <h2 id="cart-form-title" className="cart__title">
             Данные для спецификации
           </h2>
-          <p className="cart-form__hint">Необязательно — заполненные поля попадут в PDF. Хранятся только в этом браузере.</p>
+          <p className="cart-form__hint">
+            Необязательно — заполненные поля попадут в спецификацию (PDF или Excel). Данные хранятся только в этом браузере и
+            передаются на сервер лишь для формирования файла — подробнее в{" "}
+            <Link href="/privacy">политике обработки персональных данных</Link>.
+          </p>
           <div className="cart-form__grid">
             {FIELDS.map((f) => (
               <label key={f.key} className="cart-field">
@@ -172,6 +187,26 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
               />
             </label>
           </div>
+          <div className="cart-form__footer">
+            <button
+              type="button"
+              className="btn btn--outline-ink btn--sm"
+              onClick={() => {
+                clearPersonalData();
+                setCustomer(EMPTY_CUSTOMER);
+                setAgree(false);
+                setCleared(true);
+              }}
+            >
+              <Icon name="trash" size={16} />
+              Удалить мои данные
+            </button>
+            <p className="cart-form__hint" role="status">
+              {cleared
+                ? "Данные формы и отметка о согласии удалены из браузера."
+                : "Удаляет имя, телефон, e-mail, компанию и комментарий из этого браузера."}
+            </p>
+          </div>
         </section>
       </div>
 
@@ -194,14 +229,31 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
           </strong>
         </div>
         {note && <p className="cart-summary__note">{note}</p>}
-        <button type="button" className="btn btn--primary btn--block" onClick={() => download("pdf")} disabled={pending !== null}>
+
+        <div className="consent">
+          <label className="check consent__label">
+            <input type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); setError(null); }} />
+            <span className="check__box" aria-hidden="true">
+              <Icon name="check" size={12} />
+            </span>
+            <span>Я даю согласие на обработку персональных данных</span>
+          </label>
+          <p className="consent__note">
+            Текст согласия — <Link href="/consent" target="_blank" rel="noreferrer">отдельный документ</Link>, порядок
+            обработки — <Link href="/privacy" target="_blank" rel="noreferrer">политика</Link>. Отозвать согласие можно
+            письмом на <EmailLink subject="Отзыв согласия на обработку персональных данных" />.
+          </p>
+        </div>
+
+        <button type="button" className="btn btn--primary btn--block" onClick={() => download("pdf")} disabled={pending !== null || !agree}>
           {pending === "pdf" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "pdf" ? "Формируем PDF…" : "Скачать спецификацию (PDF)"}
         </button>
-        <button type="button" className="btn btn--excel btn--block" onClick={() => download("xlsx")} disabled={pending !== null}>
+        <button type="button" className="btn btn--excel btn--block" onClick={() => download("xlsx")} disabled={pending !== null || !agree}>
           {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
+        {!agree && <p className="cart-summary__hint">Скачивание доступно после отметки о согласии на обработку персональных данных.</p>}
         {error && (
           <p className="cart-summary__error" role="alert">
             {error}
@@ -209,7 +261,7 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
         )}
         <p className="cart-summary__hint">
           Корзина не оформляет заказ и не требует оплаты. Отправьте спецификацию на{" "}
-          <a href={`mailto:${email}?subject=${encodeURIComponent("Спецификация заказа")}`}>{email}</a> — мы подтвердим цены и сроки.
+          <EmailLink subject="Спецификация заказа" /> — мы подтвердим цены и сроки.
         </p>
       </aside>
     </div>

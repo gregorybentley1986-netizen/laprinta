@@ -12,3 +12,10 @@ export const site = {
     { href: "/contacts", label: "Контакты" },
   ],
 };
+
+/**
+ * Коды символов публичного адреса. Клиентские компоненты собирают из них
+ * строку сами, поэтому в HTML и RSC-пейлоаде нет ни адреса, ни `mailto:` —
+ * именно по ним работают сборщики почты для спама.
+ */
+export const emailCodes: number[] = Array.from(site.email).map((c) => c.charCodeAt(0));

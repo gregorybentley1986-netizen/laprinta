@@ -17,3 +17,21 @@ export function specNumber(now = new Date()) {
 export function specDate(now: Date) {
   return new Intl.DateTimeFormat("ru-RU", { timeZone: MOSCOW, day: "numeric", month: "long", year: "numeric" }).format(now);
 }
+
+/**
+ * Отметка о согласии на обработку персональных данных: печатается в документе,
+ * чтобы у оператора осталось доказательство его получения (ч. 3 ст. 9 152-ФЗ).
+ */
+export function consentLine(acceptedAt: string, version: string) {
+  const at = new Date(acceptedAt);
+  if (Number.isNaN(at.getTime())) return null;
+  const when = new Intl.DateTimeFormat("ru-RU", {
+    timeZone: MOSCOW,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(at);
+  return `Согласие на обработку персональных данных получено ${when} (редакция ${version})`;
+}
