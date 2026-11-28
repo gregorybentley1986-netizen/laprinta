@@ -17,7 +17,7 @@ export default async function CartPage() {
       <Breadcrumbs items={[{ href: "/", label: "Главная" }, { label: "Корзина" }]} />
       <header className="page-head">
         <h1 className="page-title">Корзина</h1>
-        <p className="page-sub">Соберите позиции и скачайте спецификацию в PDF — её можно отправить нам для расчёта заказа.</p>
+        <p className="page-sub">Соберите позиции и скачайте спецификацию в PDF или Excel — её можно отправить нам для расчёта заказа.</p>
       </header>
       <CartView products={cards} email={site.email} />
     </div>
