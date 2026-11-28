@@ -1,15 +1,15 @@
 import "server-only";
-import { randomBytes } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import PDFDocument from "pdfkit";
 import sharp from "sharp";
-import type { CardProduct } from "./cards";
 import { cartTotals, lineSum, totalsNote, type CartCustomer } from "./cart-math";
 import { MEDIA_PREFIX, UPLOAD_DIR } from "./paths";
 import { site } from "./site";
+import { specDate, specNumber } from "./spec-meta";
+import type { SpecLine } from "./spec-types";
 
-export type SpecLine = { qty: number; product: CardProduct };
+export type { SpecLine };
 
 const C = {
   bg: "#07090c",
@@ -68,19 +68,7 @@ async function thumbnail(url: string | undefined): Promise<Buffer | null> {
   }
 }
 
-export function specNumber(now = new Date()) {
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", year: "2-digit", month: "2-digit", day: "2-digit" })
-      .formatToParts(now)
-      .map((p) => [p.type, p.value]),
-  );
-  const suffix = randomBytes(3).readUIntBE(0, 3).toString(36).toUpperCase().padStart(4, "0").slice(-4);
-  return `LP-${parts.year}${parts.month}${parts.day}-${suffix}`;
-}
-
-function specDate(now: Date) {
-  return new Intl.DateTimeFormat("ru-RU", { timeZone: "Europe/Moscow", day: "numeric", month: "long", year: "numeric" }).format(now);
-}
+export { specNumber };
 
 export async function renderSpecPdf({ lines, customer, number, now = new Date() }: { lines: SpecLine[]; customer: CartCustomer; number: string; now?: Date }) {
   const f = await fonts();

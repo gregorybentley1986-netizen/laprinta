@@ -26,7 +26,7 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
   const { lines, setQty, remove, clear, prune, maxQty } = useCart();
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const [customer, setCustomer] = useState<CartCustomer>(EMPTY_CUSTOMER);
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState<"pdf" | "xlsx" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => setCustomer(loadCustomer()), []);
@@ -47,18 +47,19 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
     saveCustomer(next);
   };
 
-  const download = async () => {
-    setPending(true);
+  const download = async (format: "pdf" | "xlsx") => {
+    setPending(format);
     setError(null);
     try {
-      const res = await fetch("/api/spec", {
+      const res = await fetch(format === "pdf" ? "/api/spec" : "/api/spec/xlsx", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items: items.map(({ id, qty }) => ({ id, qty })), customer }),
       });
-      if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "Не удалось сформировать PDF");
+      if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? "Не удалось сформировать документ");
       const blob = await res.blob();
-      const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") ?? "")?.[1] ?? "laprinta-specification.pdf";
+      const ext = format === "pdf" ? "pdf" : "xlsx";
+      const name = /filename="([^"]+)"/.exec(res.headers.get("Content-Disposition") ?? "")?.[1] ?? `laprinta-specification.${ext}`;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -68,9 +69,9 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Не удалось сформировать PDF");
+      setError(e instanceof Error ? e.message : "Не удалось сформировать документ");
     } finally {
-      setPending(false);
+      setPending(null);
     }
   };
 
@@ -193,9 +194,13 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
           </strong>
         </div>
         {note && <p className="cart-summary__note">{note}</p>}
-        <button type="button" className="btn btn--primary btn--block" onClick={download} disabled={pending}>
-          {pending ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
-          {pending ? "Формируем PDF…" : "Скачать спецификацию (PDF)"}
+        <button type="button" className="btn btn--primary btn--block" onClick={() => download("pdf")} disabled={pending !== null}>
+          {pending === "pdf" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
+          {pending === "pdf" ? "Формируем PDF…" : "Скачать спецификацию (PDF)"}
+        </button>
+        <button type="button" className="btn btn--ghost btn--block" onClick={() => download("xlsx")} disabled={pending !== null}>
+          {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
+          {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
         {error && (
           <p className="cart-summary__error" role="alert">
