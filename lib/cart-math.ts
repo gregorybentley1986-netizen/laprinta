@@ -1,6 +1,6 @@
 // Shared by the cart page (client) and the PDF route (server).
 
-export const MAX_QTY = 999;
+export const MAX_QTY = 9999;
 export const MAX_LINES = 100;
 
 export type CartLine = { id: string; qty: number };
