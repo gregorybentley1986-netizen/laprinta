@@ -122,6 +122,12 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
                       {p.name}
                     </Link>
                     <span className="cart-line__unit">{p.priceRub == null ? p.price : `${p.price} / шт.`}</span>
+                    <span className="cart-line__attrs">
+                      {[
+                        `Цвет: ${p.colors.length ? p.colors.map((c) => c.name).join(", ") : "не указан"}`,
+                        ...p.variants.map((v) => `${v.label}: ${v.value}`),
+                      ].join(" · ")}
+                    </span>
                   </div>
                   <div className="cart-line__qty">
                     <QtyStepper qty={qty} max={maxQty} name={p.name} onChange={(n) => (n < 1 ? remove(id) : setQty(id, n))} />

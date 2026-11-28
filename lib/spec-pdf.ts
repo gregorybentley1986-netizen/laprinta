@@ -187,7 +187,27 @@ export async function renderSpecPdf({ lines, customer, number, now = new Date() 
     const nameH = doc.heightOfString(p.name, { width: nameW });
     doc.font("R").fontSize(7.5);
     const metaH = p.meta ? doc.heightOfString(p.meta, { width: nameW }) : 0;
-    const textH = nameH + (metaH ? metaH + 3 : 0);
+
+    // Mandatory block: colours and every attribute the card offers as a choice,
+    // so the spec always carries the exact configuration that was ordered.
+    const ATTR = 7.5;
+    const SW = 10; // swatch pitch
+    const attrs = [
+      {
+        label: "Цвет",
+        value: p.colors.length ? p.colors.map((c) => c.name).join(", ") : "не указан",
+        colors: p.colors.map((c) => c.hex),
+      },
+      ...p.variants.map((v) => ({ label: v.label, value: v.value, colors: [] as string[] })),
+    ].map((a) => {
+      const shift = a.colors.length ? a.colors.length * SW + 2 : 0;
+      doc.font(a.colors.length ? "S" : "R").fontSize(ATTR);
+      const h = doc.heightOfString(`${a.label}: ${a.value}`, { width: nameW - shift });
+      return { ...a, shift, h };
+    });
+    const attrsH = attrs.reduce((s, a) => s + a.h + 3, 0);
+
+    const textH = nameH + (metaH ? metaH + 3 : 0) + attrsH;
     const rowH = Math.max(48, textH + PAD * 2 + 4);
 
     if (y + rowH > BODY_BOTTOM) y = tableHead(newPage());
@@ -212,7 +232,26 @@ export async function renderSpecPdf({ lines, customer, number, now = new Date() 
     let ny = mid(textH);
     doc.font("S").fontSize(9.5).fillColor(C.ink).text(p.name, colX[2] + PAD, ny, { width: nameW, ...NUM });
     ny += nameH + 3;
-    if (p.meta) doc.font("R").fontSize(7.5).fillColor(C.muted).text(p.meta, colX[2] + PAD, ny, { width: nameW, ...NUM });
+    if (p.meta) {
+      doc.font("R").fontSize(7.5).fillColor(C.muted).text(p.meta, colX[2] + PAD, ny, { width: nameW, ...NUM });
+      ny += metaH + 3;
+    }
+
+    for (const a of attrs) {
+      let ax = colX[2] + PAD;
+      if (a.colors.length) {
+        for (const hex of a.colors) {
+          ax += SW / 2;
+          doc.circle(ax, ny + ATTR / 2 + 1.5, SW / 2 - 1.5).fill(hex || C.dim);
+          doc.lineWidth(0.4).strokeColor(C.line).circle(ax, ny + ATTR / 2 + 1.5, SW / 2 - 1.5).stroke();
+          ax += SW / 2;
+        }
+        ax += 2;
+      }
+      doc.font("S").fontSize(ATTR).fillColor(C.inkAccent).text(`${a.label}: `, ax, ny, { continued: true, lineBreak: false });
+      doc.font("R").fillColor(C.ink).text(a.value, { width: nameW - a.shift, ...NUM });
+      ny += a.h + 3;
+    }
 
     const cell = (i: number, text: string, font = "R", color = C.ink, size = 9) => {
       doc.font(font).fontSize(size).fillColor(color).text(text, colX[i] + PAD, mid(size + 2), { width: COLS[i].w - PAD * 2, align: COLS[i].align, lineBreak: false, ...NUM });

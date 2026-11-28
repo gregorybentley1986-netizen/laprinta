@@ -18,6 +18,8 @@ export type CardProduct = {
   hasVideo: boolean;
   has3d: boolean;
   colors: { name: string; hex: string }[];
+  /** Attributes flagged as a series difference — exactly the ones the card offers as a choice. */
+  variants: { label: string; value: string }[];
   cover: { url: string; alt: string; width?: number; height?: number } | null;
 };
 
@@ -38,6 +40,7 @@ export function toCard(db: Database, p: Product): CardProduct {
     hasVideo: p.media.some((m) => m.type === "video"),
     has3d: p.media.some((m) => m.type === "glb"),
     colors: p.colors.map((c) => ({ name: c.name, hex: c.hex })),
+    variants: p.specs.filter((s) => s.variant && s.value.trim()).map((s) => ({ label: s.label.trim(), value: s.value.trim() })),
     cover: cover ? { url: cover.url, alt: cover.alt || p.name, width: cover.width, height: cover.height } : null,
   };
 }

@@ -166,6 +166,11 @@
   color: var(--c-ink-muted);
   font-variant-numeric: tabular-nums;
 }
+.cart-line__attrs {
+  font-size: var(--fs-xs);
+  color: var(--c-ink-accent);
+  line-height: var(--lh-snug);
+}
 .cart-line__sum {
   font-size: var(--fs-md);
   font-weight: 600;
