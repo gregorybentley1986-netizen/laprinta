@@ -69,6 +69,12 @@ const PATHS = {
   ),
   minus: <path d="M5 12h14" />,
   download: <path d="M12 4v11M7 10.5l5 5 5-5M4.5 19.5h15" />,
+  info: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M12 11v5.6M12 7.7v.4" />
+    </>
+  ),
   file: <path d="M6 3.5h8l4 4v13H6v-17zM14 3.5v4h4M9 12h6M9 15.5h6" />,
   search: (
     <>

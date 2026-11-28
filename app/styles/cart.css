@@ -445,3 +445,44 @@
   margin: 0;
   max-width: 34ch;
 }
+
+/* Download buttons before consent: clickable (so the click can explain itself)
+   but visually inactive. */
+.btn.is-inactive {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.is-inactive:hover {
+  filter: none;
+  transform: none;
+}
+.btn.is-inactive:active {
+  transform: none;
+}
+.consent.is-highlight {
+  outline: 2px solid var(--c-ink-accent);
+  outline-offset: 8px;
+  border-radius: var(--r-xs);
+  animation: consent-nudge 0.45s var(--ease);
+}
+.consent.is-highlight .consent__label {
+  color: var(--c-ink-accent);
+}
+@keyframes consent-nudge {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+.consent-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--c-danger-ink);
+}
+.consent-alert svg {
+  flex: none;
+  margin-top: 0.1rem;
+}

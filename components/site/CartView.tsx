@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EMPTY_CUSTOMER, clearPersonalData, loadCustomer, saveCustomer, saveConsent, useCart } from "@/lib/cart";
 import { CUSTOMER_LIMITS, cartTotals, lineSum, totalsNote, type CartCustomer } from "@/lib/cart-math";
 import type { CardProduct } from "@/lib/cards";
@@ -33,6 +33,10 @@ export function CartView({ products }: { products: CardProduct[] }) {
   /** Согласие не проставляется по умолчанию и не восстанавливается из браузера — его дают действием. */
   const [agree, setAgree] = useState(false);
   const [cleared, setCleared] = useState(false);
+  /** Попытка скачать без согласия: подсвечиваем флаг и объясняем, чего не хватает. */
+  const [consentHint, setConsentHint] = useState(false);
+  const [highlight, setHighlight] = useState(false);
+  const consentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => setCustomer(loadCustomer()), []);
   useEffect(() => {
@@ -52,9 +56,28 @@ export function CartView({ products }: { products: CardProduct[] }) {
     saveCustomer(next);
   };
 
+  /** Кнопки не блокируются через disabled: клик должен сработать и показать, чего не хватает. */
+  const requireConsent = () => {
+    setConsentHint(true);
+    setError(null);
+    setHighlight(true);
+    consentRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    consentRef.current?.querySelector("input")?.focus({ preventScroll: true });
+    window.setTimeout(() => setHighlight(false), 2600);
+  };
+
+  const consentChanged = (checked: boolean) => {
+    setAgree(checked);
+    setError(null);
+    if (checked) {
+      setConsentHint(false);
+      setHighlight(false);
+    }
+  };
+
   const download = async (format: "pdf" | "xlsx") => {
     if (!agree) {
-      setError("Отметьте согласие на обработку персональных данных");
+      requireConsent();
       return;
     }
     setPending(format);
@@ -230,9 +253,9 @@ export function CartView({ products }: { products: CardProduct[] }) {
         </div>
         {note && <p className="cart-summary__note">{note}</p>}
 
-        <div className="consent">
+        <div className={`consent${highlight ? " is-highlight" : ""}`} ref={consentRef}>
           <label className="check consent__label">
-            <input type="checkbox" checked={agree} onChange={(e) => { setAgree(e.target.checked); setError(null); }} />
+            <input type="checkbox" checked={agree} onChange={(e) => consentChanged(e.target.checked)} />
             <span className="check__box" aria-hidden="true">
               <Icon name="check" size={12} />
             </span>
@@ -245,15 +268,32 @@ export function CartView({ products }: { products: CardProduct[] }) {
           </p>
         </div>
 
-        <button type="button" className="btn btn--primary btn--block" onClick={() => download("pdf")} disabled={pending !== null || !agree}>
+        <button
+          type="button"
+          className={`btn btn--primary btn--block${agree ? "" : " is-inactive"}`}
+          aria-disabled={!agree || pending !== null}
+          disabled={pending !== null}
+          onClick={() => download("pdf")}
+        >
           {pending === "pdf" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "pdf" ? "Формируем PDF…" : "Скачать спецификацию (PDF)"}
         </button>
-        <button type="button" className="btn btn--excel btn--block" onClick={() => download("xlsx")} disabled={pending !== null || !agree}>
+        <button
+          type="button"
+          className={`btn btn--excel btn--block${agree ? "" : " is-inactive"}`}
+          aria-disabled={!agree || pending !== null}
+          disabled={pending !== null}
+          onClick={() => download("xlsx")}
+        >
           {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
-        {!agree && <p className="cart-summary__hint">Скачивание доступно после отметки о согласии на обработку персональных данных.</p>}
+        {!agree && consentHint && (
+          <p className="consent-alert" role="alert">
+            <Icon name="info" size={16} />
+            Чтобы скачать документ, отметьте согласие на обработку персональных данных.
+          </p>
+        )}
         {error && (
           <p className="cart-summary__error" role="alert">
             {error}
