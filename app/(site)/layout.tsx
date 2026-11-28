@@ -1,3 +1,4 @@
+import { CookieNotice } from "@/components/site/CookieNotice";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import "../styles/site.css";
@@ -15,6 +16,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
       </div>
       <SiteFooter />
+      <CookieNotice />
     </>
   );
 }
