@@ -22,10 +22,10 @@ export const legal: {
 } = {
   operator: {
     form: "ИП",
-    name: "", // ФИО индивидуального предпринимателя
-    inn: "",
-    ogrnip: "",
-    address: "",
+    name: "Шемелин Павел Васильевич",
+    inn: "510704949282",
+    ogrnip: "326510000022061",
+    address: "Мурманская обл., г. Мончегорск, пр-т Металлургов, д. 64, кв. 18",
     email: site.email,
   },
   policyVersion: "1.0",
