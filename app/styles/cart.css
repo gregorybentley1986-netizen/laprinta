@@ -502,3 +502,21 @@
   outline-offset: 6px;
   border-radius: var(--r-xs);
 }
+
+/* Причина, по которой флаг согласия недоступен */
+.consent__locked {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--r-xs);
+  background: rgba(6, 122, 128, 0.07);
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--c-ink-accent);
+}
+.consent__locked svg {
+  flex: none;
+  margin-top: 0.1rem;
+}

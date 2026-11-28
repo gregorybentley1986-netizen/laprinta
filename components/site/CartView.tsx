@@ -275,8 +275,14 @@ export function CartView({ products }: { products: CardProduct[] }) {
             </span>
             <span>Я даю согласие на обработку персональных данных</span>
           </label>
+          {!hasData && (
+            <p className="consent__locked" role="note">
+              <Icon name="info" size={14} />
+              Отметка неактивна: персональные данные не заполнены. Укажите хотя бы одно поле — или скачивайте без них,
+              тогда в документе не будет данных заказчика.
+            </p>
+          )}
           <p className="consent__note">
-            {hasData ? null : "Отметка станет доступна, как только вы укажете хотя бы одно поле; скачать можно и без данных — тогда в документе не будет данных заказчика. "}
             Текст согласия — <Link href="/consent" target="_blank" rel="noreferrer">отдельный документ</Link>, порядок
             обработки — <Link href="/privacy" target="_blank" rel="noreferrer">политика</Link>. Отозвать согласие можно
             письмом на <EmailLink subject="Отзыв согласия на обработку персональных данных" />.
