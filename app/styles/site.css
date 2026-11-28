@@ -121,6 +121,17 @@
   border-color: var(--c-ink-accent-line);
   color: var(--c-ink-accent);
 }
+/* Secondary download on a light card: teal text/border instead of the
+   almost invisible ghost style (`--c-fg` text on white) */
+.btn--excel {
+  border-color: var(--c-ink-accent);
+  color: var(--c-ink-accent);
+  background: var(--c-surface);
+}
+.btn--excel:hover {
+  border-color: var(--c-ink-accent);
+  background: rgba(6, 122, 128, 0.09);
+}
 .btn--ink {
   background: var(--c-ink);
   color: #fff;

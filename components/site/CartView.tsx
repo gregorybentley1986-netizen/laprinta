@@ -198,7 +198,7 @@ export function CartView({ products, email }: { products: CardProduct[]; email: 
           {pending === "pdf" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "pdf" ? "Формируем PDF…" : "Скачать спецификацию (PDF)"}
         </button>
-        <button type="button" className="btn btn--ghost btn--block" onClick={() => download("xlsx")} disabled={pending !== null}>
+        <button type="button" className="btn btn--excel btn--block" onClick={() => download("xlsx")} disabled={pending !== null}>
           {pending === "xlsx" ? <span className="spinner" aria-hidden="true" /> : <Icon name="download" size={18} />}
           {pending === "xlsx" ? "Формируем Excel…" : "Скачать в Excel"}
         </button>
